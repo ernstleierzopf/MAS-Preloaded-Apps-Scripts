@@ -11,7 +11,7 @@ input=$1
 apk_path='apks/*'
 resultsPath='Results/'
 
-ADA_DIRECTORY="$path/results_api"
+ADA_DIRECTORY="$path"
 ADA_JSON_FILE="certs.json"
 
 if [ -n "$input" ] && [ "$input" == "test" ]; then 
