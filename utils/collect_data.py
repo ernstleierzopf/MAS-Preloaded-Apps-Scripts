@@ -33,7 +33,7 @@ timestamp = sys.argv[1]
 uuid_execution = sys.argv[2]
 actual_timestamp = parse_timestamp(timestamp)
 path_export_csv = os.path.join(
-    os.getcwd() + '/results', actual_timestamp + '_' + uuid_execution)
+    os.getcwd() + '/Results', actual_timestamp + '_' + uuid_execution)
 
 
 def extract_findings():
