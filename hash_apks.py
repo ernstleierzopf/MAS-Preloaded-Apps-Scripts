@@ -2,8 +2,8 @@ import os
 import hashlib
 import sys
 
-apk_hashes = sys.argv[1]
-apks_path = "apks"
+apks_path = sys.argv[1]
+apk_hashes = sys.argv[2]
 
 with open(apk_hashes, "w") as hash_file:
     for root, dirs, files in os.walk(apks_path, topdown=True):
