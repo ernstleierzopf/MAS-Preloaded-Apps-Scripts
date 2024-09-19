@@ -1,4 +1,4 @@
-from settings import DB_USER_MASA, DB_PASSWORD_MASA
+from settings import DB_USER_MASA, DB_PASSWORD_MASA, DB_HOST_MASA
 from utils.auxiliar_functions import use_semgrep, parse_timestamp, get_script_version, export_csv
 from sqlalchemy import create_engine
 from db import database_utils
@@ -16,7 +16,7 @@ sys.path.append('./')
 
 # Replace with your actual database connection details
 db_config = {
-    "host": "localhost",
+    "host": DB_HOST_MASA,
     "user": DB_USER_MASA,
     "password": DB_PASSWORD_MASA,
     "database": database_utils.get_database_name()
