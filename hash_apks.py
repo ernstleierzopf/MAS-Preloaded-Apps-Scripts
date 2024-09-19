@@ -1,7 +1,8 @@
 import os
 import hashlib
+import sys
 
-apk_hashes = "Results/apk_hashes.csv"
+apk_hashes = sys.argv[1]
 apks_path = "apks"
 
 with open(apk_hashes, "w") as hash_file:
