@@ -122,7 +122,7 @@ apktoolFunction
 
 checkResultsDirectory
 
-python3 utils/collect_data.py "$actual_timestamp";
+python3 utils/collect_data.py "$actual_timestamp" $uuid_execution;
 
 find . -name "apkTool.txt" -exec rm {} \;
 
