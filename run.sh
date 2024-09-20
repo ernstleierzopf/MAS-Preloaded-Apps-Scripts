@@ -16,7 +16,6 @@ ADA_JSON_FILE="certs.json"
 
 if [ -n "$input" ] && [ "$input" == "test" ]; then 
 	apk_path='unit_tests/reference_apk/*'
-	uuid_execution='55555555-4444-3333-2222-111111111111'
 	echo "Unit tests will be executed."
 fi
 
@@ -123,7 +122,7 @@ apktoolFunction
 
 checkResultsDirectory
 
-python3 utils/collect_data.py "$actual_timestamp" $uuid_execution;
+python3 utils/collect_data.py "$actual_timestamp";
 
 find . -name "apkTool.txt" -exec rm {} \;
 

@@ -110,22 +110,21 @@ def collect_data_script(uuid_execution):
 
     if export_csv():
         report_table.to_csv(
-            path_export_csv + '/App_Analysis_Report_' + actual_timestamp + '.csv', index=False)
+            path_export_csv + '/Report.csv', index=False)
         fail_counts_table.to_csv(
-            path_export_csv + '/App_Analysis_Total_Fail_Counts_' + actual_timestamp + '.csv', index=False)
+            path_export_csv + '/Total_Fail_Counts.csv', index=False)
         logging_table.to_csv(
-            path_export_csv + '/App_Analysis_Logging_' + actual_timestamp + '.csv', index=False)
+            path_export_csv + '/Logging.csv', index=False)
         script_findings.to_csv(
-            path_export_csv + '/App_Analysis_Findings_' + actual_timestamp + '.csv', index=False)
+            path_export_csv + '/Findings.csv', index=False)
         permissions_table.to_csv(
-            path_export_csv + '/App_Analysis_Permissions_' + actual_timestamp + '.csv', index=False)
+            path_export_csv + '/Permissions.csv', index=False)
         metadata_table.to_csv(
-            path_export_csv + '/App_Analysis_Device_Info_' + actual_timestamp + '.csv', index=False)
+            path_export_csv + '/Device_Info.csv', index=False)
         data_formula = [['Formula'], [formatted_value]]
         df = pd.DataFrame(data_formula)
         # Export the DataFrame to a CSV file with no index and no header
-        df.to_csv(path_export_csv + '/App_Analysis_Formula_' +
-                  actual_timestamp + '.csv', index=False, header=False)
+        df.to_csv(path_export_csv + '/Formula.csv', index=False, header=False)
 
     else:
         # Create a new Excel workbook
@@ -166,8 +165,7 @@ def collect_data_script(uuid_execution):
             workbook.remove(default_sheet)
 
         # Save the workbook to a file
-        workbook.save(path_export_csv + '/App_Analysis_' +
-                      actual_timestamp + '.xlsx')
+        workbook.save(path_export_csv + '/Report.xlsx')
 
 
 def collect_data_semgrep():
@@ -176,9 +174,9 @@ def collect_data_semgrep():
 
     if export_csv():
         report_table.to_csv(
-            path_export_csv + '/App_Analysis_Report_' + actual_timestamp + '.csv', index=False)
+            path_export_csv + '/Report.csv', index=False)
         finding_table.to_csv(
-            path_export_csv + '/App_Analysis_Findings_' + actual_timestamp + '.csv', index=False)
+            path_export_csv + '/Findings.csv', index=False)
 
     else:
         # Create a new Excel workbook
@@ -200,8 +198,7 @@ def collect_data_semgrep():
             workbook.remove(default_sheet)
 
         # Save the workbook to a file
-        workbook.save(path_export_csv + '/App_Analysis_' +
-                      actual_timestamp + '.xlsx')
+        workbook.save(path_export_csv + '/Report.xlsx')
 
 
 if __name__ == "__main__":
