@@ -71,8 +71,14 @@ if not found:
         config = yaml.load(f, Loader=yaml.SafeLoader)
     os.chdir(apk_dir_path)
     decompile_apk(apk_path, os.path.dirname(__file__))
+    if not os.path.exists(extracted_path):
+        logging.error("Extracted APK path does not exist. Stopping..")
+        exit(1)
     decompiled_dir = os.path.join(apk_dir_path, "decompiled")
     decompile_jadx(decompiled_dir, apk_path, os.path.dirname(__file__))
+    if not os.path.exists(decompiled_dir):
+        logging.error("Decompiled APK path does not exist. Stopping..")
+        exit(1)
     os.chdir(cwd)
 
     try:
