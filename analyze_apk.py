@@ -66,7 +66,6 @@ if not found:
     cwd = os.getcwd()
     semgrep = use_semgrep()
     script_version = get_script_version()
-    version_name = get_version_name(extracted_path)
     with open('config/methods_config.yml') as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
     os.chdir(apk_dir_path)
@@ -103,6 +102,7 @@ if not found:
 
     subprocess.check_output('cat ' + os.path.join(apk_dir_path, "net2.txt") + '| cut -d "/" -f 3 | sort | uniq > ' + os.path.join(apk_dir_path, "filtered_net2.txt"), shell=True)
     shutil.copy2(os.path.join(decompiled_dir, "resources", "AndroidManifest.xml"), android_manifest_path)
+    version_name = get_version_name(extracted_path)
     package_name = check_package_name(extracted_path, os.path.basename(apk_path))
 
     internet = 0
