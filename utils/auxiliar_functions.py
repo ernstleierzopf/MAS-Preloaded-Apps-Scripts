@@ -228,7 +228,7 @@ def export_csv():
 
 def get_version_name(wdir):
     try:
-        with open(os.path.join(wdir + '/AndroidManifest.xml'), 'r') as file:
+        with open(os.path.join(wdir, 'AndroidManifest.xml'), 'r') as file:
             content = file.read()
 
             match = re.search(r'android:versionName\s*=\s*"([^"]+)"', content)
