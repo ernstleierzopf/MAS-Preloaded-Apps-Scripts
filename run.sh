@@ -9,7 +9,7 @@ uuid_execution=$(uuidgen)
 path=$(pwd)
 input=$1
 apk_path='apks/*'
-resultsPath='Results/'
+resultsPath='results/'
 
 ADA_DIRECTORY="$path"
 ADA_JSON_FILE="certs.json"
