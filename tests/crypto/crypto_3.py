@@ -1,22 +1,23 @@
+"""CRYPTO-3 - MASTG-TEST-0014"""
+import os.path
 import subprocess
 import datetime
-import db.database_utils as database_utils
+import logging
 
-def check(wdir, apk, apk_hash, package_name, uuid_execution):
-    '''
+def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
+    """
         Check for potentially vulnerable algorithms in the code.
         If a match is found, FAIL is set, otherwise PASS
-    '''
+    """
     verdict = 'FAIL'
     total_matches = 0
     vuln_algo = ["\"AES/CBC/PKCS5Padding\"", "\"DES/CBC/PKCS5Padding\"", "\".*\\/ECB\"", "\"^(TLS).*-CBC-.*\""]
-    
+    ct = datetime.datetime.now()
+    sources_path = os.path.join(wdir, "decompiled", "sources")
     for i in vuln_algo:
-        cmd = f"grep -rnws --exclude='*.dex' -E {i} {wdir}/decompiled/sources"
-        
+        cmd = f"grep -rnws --exclude='*.dex' -E {i} {sources_path}"
         try:
             output = subprocess.check_output(cmd, shell=True).splitlines()
-            
             if len(output) > 0:
                 for match in output:
                     match_str = match.decode()
@@ -25,32 +26,23 @@ def check(wdir, apk, apk_hash, package_name, uuid_execution):
                             match_file = match_str.split(":")[0]
                             match_line = match_str.split(":")[1] 
                             total_matches += 1
-                            database_utils.insert_new_finding([apk_hash, package_name, "CRYPTO", "CRYPTO-3", match_file, match_line, uuid_execution])
+                            findings.append("%s;%s;CRYPTO;CRYPTO-3;%s;%s" % (apk_hash, package_name, match_file, match_line))
                         else:
                             total_matches += 1
-                            database_utils.insert_new_finding([apk_hash, package_name, "CRYPTO", "CRYPTO-3", match_str, '-', uuid_execution])
+                            findings.append("%s;%s;CRYPTO;CRYPTO-3;%s;-" % (apk_hash, package_name, match_str))
                     except:
-                        print('[ERROR] It was not possible to get match_file or match_line')
+                        msg = "%s;%s;%s;CRYPTO-3;It was not possible to get match_file or match_line" % (apk_hash, package_name, ct)
+                        logging.error(msg)
         except subprocess.CalledProcessError as e:
-            if e.returncode == 1:
-                pass 
-            else:
-                ct = datetime.datetime.now()
-                database_utils.insert_values_logging(apk_hash, package_name, ct, "CRYPTO-3", f"grep command failed due to {wdir}/decompiled/sources does not exists", uuid_execution)
-                pass #No output
+            if e.returncode != 1:
+                msg = "%s;%s;%s;CRYPTO-3;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources_path)
+                logging.error(msg)
         except:
-            ct = datetime.datetime.now()
-            database_utils.insert_values_logging(apk_hash, package_name, ct, "CRYPTO-3", f"grep command failed for {i}", uuid_execution)
-            pass #No output
-
-    if total_matches > 0:
-        database_utils.update_values("Report", "CRYPTO_3", "FAIL", "HASH", apk_hash, uuid_execution)
-        database_utils.update_values("Total_Fail_Counts", "CRYPTO_3", total_matches, "HASH", apk_hash, uuid_execution)
-    else:
+            msg = "%s;%s;%s;CRYPTO-3;grep command failed for %s" % (apk_hash, package_name, ct, i)
+            logging.error(msg)
+    if total_matches == 0:
         verdict = 'PASS'
-        database_utils.update_values("Report", "CRYPTO_3", "PASS", "HASH", apk_hash, uuid_execution)
-        database_utils.update_values("Total_Fail_Counts", "CRYPTO_3", total_matches, "HASH", apk_hash, uuid_execution)
-
+    report["CRYPTO-3"] = verdict
+    fail_counts["CRYPTO-3"] = total_matches
     print('CRYPTO-3 successfully tested.')
-
     return [verdict, total_matches]

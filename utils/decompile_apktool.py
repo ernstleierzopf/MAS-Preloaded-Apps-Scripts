@@ -2,6 +2,7 @@ import subprocess
 import sys
 import os
 
+
 def decompile(app_path, script_path):
     command = [script_path+"/tools/apktool", "d", app_path]
     try:

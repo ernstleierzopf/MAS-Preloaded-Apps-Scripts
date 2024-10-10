@@ -13,45 +13,42 @@ import requests
 import json
 import glob
 import csv
+import logging
 
 
-def check_signature(wdir, apk, apk_hash, package_name, uuid_execution):
+def check_signature(wdir, apk, apk_hash, package_name):
     '''
     Returns output of apksigner to verify the signature.
     '''
+    ct = datetime.datetime.now()
+    msg = "%s;%s;%s;CODE-1;apksigner failed verifying signature" % (apk_hash, package_name, ct)
+    apk_path = os.path.join(wdir, apk)
     try:
-        cmd = f"{PATH_APKSIGNER} verify -verbose {wdir}/{apk}"
+        cmd = f"{PATH_APKSIGNER} verify -verbose {apk_path}"
         output = [i.decode("utf-8")
                   for i in subprocess.check_output(cmd, shell=True, timeout=300).splitlines()]
         return output
     except subprocess.CalledProcessError as e:
-        if e.returncode == 1:
-            return "Invalid"
-            pass
-        else:
-            ct = datetime.datetime.now()
-            database_utils.insert_values_logging(
-                apk_hash, package_name, ct, "CODE-1", "apksigner failed verifying signature", uuid_execution)
-            return "Invalid"
+        if e.returncode != 1:
+            logging.error(msg)
     except:
-        ct = datetime.datetime.now()
-        database_utils.insert_values_logging(
-            apk_hash, package_name, ct, "CODE-1", "apksigner failed verifying signature", uuid_execution)
-        return "Invalid"
+        logging.error(msg)
+    return "Invalid"
 
 
-def check_debuggable(wdir, apk_hash, package_name, uuid_execution):
+def check_debuggable(wdir, apk_hash, package_name):
     '''
     Check if the application uses android:debuggable="true" in AndroidManifest.xml file
     '''
-    cmd = f"grep -n --exclude='*.dex' -iE 'android:debuggable=\"true\"' {wdir}/base/AndroidManifest.xml"
+    manifest_path = os.path.join(wdir, "AndroidManifest.xml")
+    cmd = f"grep -n --exclude='*.dex' -iE 'android:debuggable=\"true\"' {manifest_path}"
     try:
         output = subprocess.check_output(cmd, shell=True).splitlines()
     except subprocess.CalledProcessError as e:
         ct = datetime.datetime.now()
         if e.returncode == 2:
-            database_utils.insert_values_logging(
-                apk_hash, package_name, ct, "CODE-2", "grep android:debuggable command failed", uuid_execution)
+            msg = "%s;%s;%s;CODE-2;grep android:debuggable command failed" % (apk_hash, package_name, ct)
+            logging.error(msg)
             output = "Error"
         else:
             output = "No relevant results"
@@ -66,7 +63,7 @@ def check_package_name(wdir, name):
     # awk -F 'package=' '{print $2}' | awk -F' ' '{print $1}' | sed s/\"//g
     grep = "YXdrIC1GICdwYWNrYWdlPScgJ3twcmludCAkMn0nIHwgYXdrIC1GJyAnICd7cHJpbnQgJDF9JyB8IHNlZCBzL1wiLy9n"
     d_grep = base64.b64decode(grep).decode("utf-8")
-    cmd = f"cat {wdir}/base/AndroidManifest.xml | {d_grep}"
+    cmd = f"cat {wdir}/AndroidManifest.xml | {d_grep}"
 
     output = subprocess.check_output(
         cmd, shell=True).decode("utf-8").replace("\n", "")
@@ -94,7 +91,8 @@ def get_hash(wdir):
 
 
 def get_suid_from_manifest(wdir):
-    cmd_get_suid = f'cat {wdir}/base/AndroidManifest.xml | grep -Po "(?<=android:sharedUserId=)\\"[^\\"]+\\"" | sed \'s/\\"//g\''
+    manifest_path = os.path.join(wdir, "AndroidManifest.xml")
+    cmd_get_suid = f'cat {manifest_path} | grep -Po "(?<=android:sharedUserId=)\\"[^\\"]+\\"" | sed \'s/\\"//g\''
 
     try:
         out_suid = subprocess.check_output(
@@ -155,7 +153,8 @@ def check_network_applies(wdir, apk_hash, internet, uuid_execution):
 def check_app(wdir, apk, apk_hash, package_name, internet, semgrep, uuid_execution):
 
     # if no content in /sources add in Logging table this error and no scan
-    if not (os.path.exists(wdir + '/decompiled/sources') and os.path.isdir(wdir + '/decompiled/sources')):
+    sources = os.path.join(wdir, "decompiled", "sources")
+    if not (os.path.exists(sources) and os.path.isdir(sources)):
         print('Application was decompiled and no sources folder was found. Skipping.')
         ct = datetime.datetime.now()
         database_utils.insert_values_logging(apk_hash, package_name, ct, 'Full Application',
@@ -229,7 +228,7 @@ def export_csv():
 
 def get_version_name(wdir):
     try:
-        with open(os.path.join(wdir + '/base/AndroidManifest.xml'), 'r') as file:
+        with open(os.path.join(wdir + '/AndroidManifest.xml'), 'r') as file:
             content = file.read()
 
             match = re.search(r'android:versionName\s*=\s*"([^"]+)"', content)

@@ -1,87 +1,74 @@
+"""NETWORK-3 - MASTG-TEST-0021"""
+import os.path
 import subprocess
 import datetime
 import db.database_utils as database_utils
 from utils.auxiliar_functions import get_suid_from_manifest
 
-def check(wdir, apk, apk_hash, package_name, uuid_execution):
+
+def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
     verdict = 'FAIL'
     net_config = False
-    low_target_Sdk = False
+    low_target_sdk = False
     total_matches = 0
-    findings = 0
-    verifier_check = "\"(import java(x)?\\.(.*)HostnameVerifier;)\"" 
-    
-    cmd =f"cat {wdir}/base/AndroidManifest.xml |  egrep -iE 'android:networkSecurityConfig' | wc -l"
+    verifier_check = "\"(import java(x)?\\.(.*)HostnameVerifier;)\""
+    cmd = "cat %s |  egrep -iE 'android:networkSecurityConfig' | wc -l" % os.path.join(wdir, apk.replace(".apk", ""), "AndroidManifest.xml")
+    ct = datetime.datetime.now()
     try:
         output = subprocess.check_output(cmd, shell=True).strip()
         if int(output) > 0:
             net_config = True
     except subprocess.CalledProcessError as e:
-        if e.returncode == 1:
-            pass 
-        else:
+        if e.returncode != 1:
             net_config = False
-            ct = datetime.datetime.now()
-            database_utils.insert_values_logging(apk_hash, package_name, ct, "NETWORK-3", "Network security config file grep error", uuid_execution)
+            msg = "%s;%s;%s;NETWORK-3;Network security config file grep error" % (apk_hash, package_name, ct)
+            logging.error(msg)
     except:
         net_config = False
-        ct = datetime.datetime.now()
-        database_utils.insert_values_logging(apk_hash, package_name, ct, "NETWORK-3", "Network security config file grep error", uuid_execution)
-        pass
+        msg = "%s;%s;%s;NETWORK-3;Network security config file grep error" % (apk_hash, package_name, ct)
+        logging.error(msg)
 
-    cmd_get_target_sdk = f'cat {wdir}/base/AndroidManifest.xml | grep -Po \"(?<=android:targetSdkVersion=)\\"[^\\"]+\\"\" | sed \'s/\"//g\''
+    cmd_get_target_sdk = f'cat %s | grep -Po \"(?<=android:targetSdkVersion=)\\"[^\\"]+\\"\" | sed \'s/\"//g\'' % os.path.join(wdir, apk.replace(".apk", ""), "AndroidManifest.xml")
     try:
         output = subprocess.check_output(cmd_get_target_sdk, shell=True).splitlines()
         if int(int(output[0])) < 24:
-            low_target_Sdk = True
+            low_target_sdk = True
     except subprocess.CalledProcessError as e:
-        if e.returncode == 1:
-            pass 
-        else:
-            low_target_Sdk = False
-            ct = datetime.datetime.now()
-            database_utils.insert_values_logging(apk_hash, package_name, ct, "NETWORK-3", "Target sdk grep error", uuid_execution)
+        if e.returncode != 1:
+            low_target_sdk = False
+            msg = "%s;%s;%s;NETWORK-3;Target sdk grep error" % (apk_hash, package_name, ct)
+            logging.error(msg)
     except:
-        low_target_Sdk = False
-        ct = datetime.datetime.now()
-        database_utils.insert_values_logging(apk_hash, package_name, ct, "NETWORK-3", "Target sdk grep error", uuid_execution)
+        low_target_sdk = False
+        msg = "%s;%s;%s;NETWORK-3;Target sdk grep error" % (apk_hash, package_name, ct)
+        logging.error(msg)
 
-    cmd_check_hostnameverifier = f"grep -rnwzs --exclude='*.dex' -E {verifier_check} {wdir}/decompiled/sources | wc -l"
+    sources = os.path.join(wdir, "decompiled", "sources")
+    cmd_check_hostnameverifier = f"grep -rnwzs --exclude='*.dex' -E {verifier_check} {sources} | wc -l"
     try:
         output = subprocess.check_output(cmd_check_hostnameverifier, shell=True).splitlines()
         if int(output[0]) > 0:
-            total_matches += 1 
+            total_matches += 1
     except subprocess.CalledProcessError as e:
-        if e.returncode == 1:
-            pass 
-        else:
-            ct = datetime.datetime.now()
-            database_utils.insert_values_logging(apk_hash, package_name, ct, "NETWORK-3", "hostname verifier functions grep error or not found", uuid_execution)
-            pass  # No output
+        if e.returncode != 1:
+            msg = "%s;%s;%s;NETWORK-3;hostname verifier functions grep error or not found" % (apk_hash, package_name, ct)
+            logging.error(msg)
     except:
-        ct = datetime.datetime.now()
-        database_utils.insert_values_logging(apk_hash, package_name, ct, "NETWORK-3", "hostname verifier functions grep error or not found", uuid_execution)
-        pass  # No output
+        msg = "%s;%s;%s;NETWORK-3;hostname verifier functions grep error or not found" % (apk_hash, package_name, ct)
+        logging.error(msg)
 
-    with open(wdir+'/report_'+package_name+'.txt', 'a+') as f:
-        if net_config == True and total_matches == 0:
-            findings = 1
-            database_utils.update_values("Report", "NETWORK_3", "Needs Review", "HASH", apk_hash, uuid_execution)
-            database_utils.update_values("Total_Fail_Counts", "NETWORK_3", findings, "HASH", apk_hash, uuid_execution)
-            verdict = 'Needs Review'
-        elif net_config == False and low_target_Sdk == True and total_matches == 0:
-            findings = 1
-            database_utils.update_values("Report", "NETWORK_3", "FAIL", "HASH", apk_hash, uuid_execution)
-            database_utils.insert_new_finding([apk_hash, package_name, "NETWORK", "NETWORK-3", wdir + "/base/AndroidManifest.xml", '-', uuid_execution])                 
-            database_utils.update_values("Total_Fail_Counts", "NETWORK_3", findings, "HASH", apk_hash, uuid_execution)
-        elif net_config == False and low_target_Sdk == False or total_matches > 0:
-            database_utils.update_values("Report", "NETWORK_3", "PASS", "HASH", apk_hash, uuid_execution)
-            database_utils.update_values("Total_Fail_Counts", "NETWORK_3", findings, "HASH", apk_hash, uuid_execution)
-            verdict = 'PASS'
-        else:
-            database_utils.update_values("Report", "NETWORK_3", "Needs Review", "HASH", apk_hash, uuid_execution)
-            database_utils.update_values("Total_Fail_Counts", "NETWORK_3", findings, "HASH", apk_hash, uuid_execution)
-            
+    if net_config and total_matches == 0:
+        total_matches = 1
+        verdict = 'Needs Review'
+    elif not net_config and low_target_sdk and total_matches == 0:
+        total_matches = 1
+        findings.append("%s;%s;NETWORK;NETWORK-3;%s;-" % (apk_hash, package_name, os.path.join(wdir, apk.replace(".apk", ""), "AndroidManifest.xml")))
+    elif not net_config and not low_target_sdk or total_matches > 0:
+        total_matches = 0
+        verdict = 'PASS'
+    else:
+        total_matches = 0
+    report["NETWORK-3"] = verdict
+    fail_counts["NETWORK-3"] = total_matches
     print('NETWORK-3 successfully tested.')
-
-    return [verdict, findings]
+    return [verdict, total_matches]

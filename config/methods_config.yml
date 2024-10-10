@@ -23,7 +23,7 @@ tests:
   network:
     - network_1
     - network_2
-    - network_3 
+    - network_3
   platform:
     - platform_2
     - platform_3

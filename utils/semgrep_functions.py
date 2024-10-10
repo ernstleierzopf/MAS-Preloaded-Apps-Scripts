@@ -100,7 +100,6 @@ def analyze_app(app_dir):
     return app_name, category_results
 
 def semgrep_scan(wdir, apk_hash, package_name, uuid_execution):
-
     # if no content in /sources add in Logging table this error and no scan
     if not (os.path.exists(wdir + '/decompiled/sources') and os.path.isdir(wdir + '/decompiled/sources')):
         print('Application was decompiled and no sources folder was found. Skipping.')
@@ -108,7 +107,6 @@ def semgrep_scan(wdir, apk_hash, package_name, uuid_execution):
         database_utils.insert_values_logging(apk_hash, package_name, ct, 'Full Application', 'Application was decompiled and no sources folder was found.', uuid_execution)
 
     else:
-        
         app_results = {}
 
         if os.path.isdir(wdir):

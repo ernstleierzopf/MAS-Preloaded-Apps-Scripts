@@ -14,30 +14,46 @@ def extract_SUID(tree):
     shared_user_id = root.get('{http://schemas.android.com/apk/res/android}sharedUserId')
     return shared_user_id
 
-def extract_and_store_permissions(apk_hash, package_name, wdir, uuid_execution):
-    wdir = wdir+"/base/AndroidManifest.xml"
-    tree = ET.parse(wdir)
+def extract_and_store_permissions(android_manifest_path):
+    tree = ET.parse(android_manifest_path)
     root = tree.getroot()
     suid = extract_SUID(tree)
     all_perms = set()
     android_ns = 'http://schemas.android.com/apk/res/android'
 
-    # Extract permissions
     for elem in root.iter():
         if elem.tag == 'permission' or elem.tag == 'uses-permission':
             name = elem.get(f'{{{android_ns}}}name')
             if name:
                 all_perms.add(name)
+    permissions_from_app = ','.join(str(x) for x in all_perms)
+    return permissions_from_app
 
-    # if suid == SUID_SYSTEM:
-    #     perms_config = get_all_permissions()
-    #     all_perms.update(perms_config)
 
-    # Print the permissions and scores
-    permissions_from_app = ','.join(str(x) for x in all_perms)  #This is to upload the permissions to the table
-    database_utils.insert_values_permissions(apk_hash, package_name, permissions_from_app, uuid_execution)
-    if suid is not None:
-        database_utils.update_values_permissions_add_suid(apk_hash, suid, uuid_execution)
+# def extract_and_store_permissions(apk_hash, package_name, wdir, uuid_execution):
+    # wdir = wdir+"/base/AndroidManifest.xml"
+    # tree = ET.parse(wdir)
+    # root = tree.getroot()
+    # suid = extract_SUID(tree)
+    # all_perms = set()
+    # android_ns = 'http://schemas.android.com/apk/res/android'
+
+    # # Extract permissions
+    # for elem in root.iter():
+    #     if elem.tag == 'permission' or elem.tag == 'uses-permission':
+    #         name = elem.get(f'{{{android_ns}}}name')
+    #         if name:
+    #             all_perms.add(name)
+
+    # # if suid == SUID_SYSTEM:
+    # #     perms_config = get_all_permissions()
+    # #     all_perms.update(perms_config)
+
+    # # Print the permissions and scores
+    # permissions_from_app = ','.join(str(x) for x in all_perms)  #This is to upload the permissions to the table
+    # database_utils.insert_values_permissions(apk_hash, package_name, permissions_from_app, uuid_execution)
+    # if suid is not None:
+    #     database_utils.update_values_permissions_add_suid(apk_hash, suid, uuid_execution)
 
 #FORMULA IS:
 # All apps permission shall be extracted prior to formula calculation

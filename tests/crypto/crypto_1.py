@@ -1,70 +1,62 @@
+"""CRYPTO-1 - MASTG-TEST-0013"""
+
 import subprocess
 import datetime
-import db.database_utils as database_utils
+import logging
+import os
 
-def check(wdir, apk, apk_hash, package_name, uuid_execution):
 
-    '''
+def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
+    """
         Hardcoded Byte arrays, b64 str or final Strings in files where crypto lib are imported
         Key generation with hardcoded parameters
         Triple backward slash to get escaped \"
         Output is always multiline, so len of output is not necessarily required, only a match is enough.
         However, if other regular expressions are imported, it may be useful in the future 
-    '''
+    """
     verdict = 'FAIL'
     total_matches = 0
     regex_1 = "\"import java(x)?\.(security|crypto).*;(\\n|.)*((final String [a-zA-Z0-9]+[ ]*\\=)|(==\\\")|(byte\\[\\] [a-zA-Z0-9]* = [{]{1}[ ]?[0-9]+)|(SecretKeySpec\\(((\\{[0-9]+)|(\\\"[a-zA-Z0-9]+\\\"))))\""
     regex_2 = "\"Lcom\/jiolib\/libclasses\/utils\/AesUtil\""
+    ct = datetime.datetime.now()
 
-    cmd = f"grep -rlnwzs --exclude='*.dex' -E {regex_1} {wdir}/decompiled/sources"
+    sources_path = os.path.join(wdir, "decompiled", "sources")
+    cmd = f"grep -rlnwzs --exclude='*.dex' -E {regex_1} {sources_path}"
     try:
         output = subprocess.check_output(cmd, shell=True).splitlines()
         if len(output) > 0:
             total_matches += len(output)
             for match in output:
                 match_file = match.decode()
-                database_utils.insert_new_finding([apk_hash, package_name, "CRYPTO", "CRYPTO-1", match_file, '-', uuid_execution])             
+                findings.append("%s;%s;CRYPTO;CRYPTO-1;%s;-" % (apk_hash, package_name, match_file))
     except subprocess.CalledProcessError as e:
-        if e.returncode == 1:
-            pass 
-        else:
-            ct = datetime.datetime.now()
-            database_utils.insert_values_logging(apk_hash, package_name, ct, "CRYPTO-1", f"grep command failed due to {wdir}/decompiled/sources does not exists", uuid_execution)
-            pass #No output
+        if e.returncode != 1:
+            msg = "%s;%s;%s;CRYPTO-1;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources_path)
+            logging.error(msg)
     except:
-        ct = datetime.datetime.now()
-        database_utils.insert_values_logging(apk_hash, package_name, ct, "CRYPTO-1", f"grep command failed for {regex_1}", uuid_execution)
-        pass #No output
+        msg = "%s;%s;%s;CRYPTO-1;grep command failed for %s" % (apk_hash, package_name, ct, regex_1)
+        logging.error(msg)
 
-    cmd = f"grep -rlnws --exclude='*.dex' -E {regex_2} {wdir}/decompiled/sources"
+    cmd = f"grep -rlnws --exclude='*.dex' -E {regex_2} {sources_path}"
     try:
         output = subprocess.check_output(cmd, shell=True).splitlines()
         if len(output) > 0:
             total_matches += len(output)
             for match in output:
                 match_file = match.decode().split(":")[0]
-                match_line = match.decode().split(":")[1] 
-                database_utils.insert_new_finding([apk_hash, package_name, "CRYPTO", "CRYPTO-1", match_file, match_line, uuid_execution])             
+                match_line = match.decode().split(":")[1]
+                findings.append("%s;%s;CRYPTO;CRYPTO-1;%s;%s" % (apk_hash, package_name, match_file, match_line))
     except subprocess.CalledProcessError as e:
-        if e.returncode == 1:
-            pass 
-        else:
-            ct = datetime.datetime.now()
-            database_utils.insert_values_logging(apk_hash, package_name, ct, "CRYPTO-1", f"grep command failed due to {wdir}/decompiled/sources does not exists", uuid_execution)
-            pass #No output
+        if e.returncode != 1:
+            msg = "%s;%s;%s;CRYPTO-1;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources_path)
+            logging.error(msg)
     except:
-        ct = datetime.datetime.now()
-        database_utils.insert_values_logging(apk_hash, package_name, ct, "CRYPTO-1", f"grep command failed for {regex_2}", uuid_execution)
-        pass #No output
-            
-    if total_matches > 0:
-        database_utils.update_values("Report", "CRYPTO_1", "FAIL", "HASH", apk_hash, uuid_execution)
-        database_utils.update_values("Total_Fail_Counts", "CRYPTO_1", total_matches, "HASH", apk_hash, uuid_execution)
-    else:
+        msg = "%s;%s;%s;CRYPTO-1;grep command failed for %s" % (apk_hash, package_name, ct, regex_2)
+        logging.error(msg)
+
+    if total_matches == 0:
         verdict = 'PASS'
-        database_utils.update_values("Report", "CRYPTO_1", "PASS", "HASH", apk_hash, uuid_execution) #Manual check is advised, no matches
-        database_utils.update_values("Total_Fail_Counts", "CRYPTO_1", total_matches, "HASH", apk_hash, uuid_execution)     
-
+    report["CRYPTO-1"] = verdict
+    fail_counts["CRYPTO-1"] = total_matches
     print('CRYPTO-1 successfully tested.')
-
     return [verdict, total_matches]
