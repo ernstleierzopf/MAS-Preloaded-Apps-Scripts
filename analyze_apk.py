@@ -180,10 +180,6 @@ if not found:
                     category_results[category] = (all_findings, scan_time)
             app_results[app_name] = category_results
             logging.error("SEMGREP TESTING IS NOT IMPLEMENTED!")
-            #print(app_results)
-            #print(category_results)
-        # if app_results:
-        #     write_to_database(app_results, searched_hash, package_name, version_name, script_version, uuid_execution)
         if not app_results:
             print("No findings detected across all apps.")
     else:

@@ -57,27 +57,23 @@ def extract_and_store_permissions(android_manifest_path):
 
 #FORMULA IS:
 # All apps permission shall be extracted prior to formula calculation
+def get_m_value(perm, tests, permissions_lists, fail_counts_path):
+    total_fails = 0
+    with open(fail_counts_path) as f:
+        lines = f.readlines()[1:]
+    for i, permissions_list in enumerate(permissions_lists):
+        if perm in permissions_list:
+            records = [x.replace("\n", "") for x in lines[i].split(";")[4:]]
+            for r in records:
+                total_fails += int(r)
+    return total_fails
+
 
 '''
 get_risk returns the risk associated to a permission, if that app holds a "risky" permission.
 '''
-
-
-def get_m_value(perm, tests, uuid_execution):
-    total_fails = 0
-    record_apps = database_utils.get_values_permissions(uuid_execution)
-    for rapp in record_apps:
-        permissions_list = get_permissions_list(rapp[3])
-        if perm in permissions_list:
-            records = database_utils.get_values_total_fail_counts(rapp[0], tests, uuid_execution)
-            for r in records:
-                for i in range(1,len(r)):
-                    total_fails += r[i]
-
-    return total_fails
-
-def get_risk(p, permissions):
-    scoring = get_scoring()
+def get_risk(p, permissions, method_config_path):
+    scoring = get_scoring(method_config_path)
     if p in permissions:
         return scoring[p]
     else:
@@ -85,90 +81,73 @@ def get_risk(p, permissions):
 '''
 get_value_k returns the number of apps that holds permission p
 '''
-def get_value_k(perm, uuid_execution):
+def get_value_k(perm, permissions_lists):
     total_apps = 0
-    records = database_utils.get_values_permissions(uuid_execution)
-    for row in records:
-        permissions_list = get_permissions_list(row[3])
+    for permissions_list in permissions_lists:
         if perm in permissions_list:
             total_apps += 1
-
     return total_apps
 
-def calculate_formula(Constant1, Constant2, tests, uuid_execution):
+def calculate_formula(Constant1, Constant2, tests, method_config_path, permissions_path, fail_counts_path):
     result = 0
-    all_permissions = get_all_permissions()
+    all_permissions = get_all_permissions(method_config_path)
+    with open(permissions_path) as f:
+        records = f.readlines()
+    records = [record.split(";") for record in records]
+    permissions_lists = []
+    for row in records[1:]:
+        permissions_list = get_permissions_list(row[2].replace("\n", ""))
+        permissions_lists.append(permissions_list)
     for p in all_permissions:
-        risk = get_risk(p, all_permissions)
-        value_k = get_value_k(p, uuid_execution)
-        M = get_m_value(p, tests, uuid_execution)
+        risk = get_risk(p, all_permissions, method_config_path)
+        value_k = get_value_k(p, permissions_lists)
+        M = get_m_value(p, tests, permissions_lists, fail_counts_path)
         term = risk * (1 - ((1 - Constant1) ** value_k) * ((1 - Constant2) ** M))
-
         result += term
-
     formula_value = round(result, 4)
-    sum_weights = get_sum_weights()
-
+    sum_weights = get_sum_weights(method_config_path)
     risk_score = (formula_value / sum_weights) * 100
-
-    database_utils.set_risk_score(uuid_execution, risk_score)
-
     return risk_score
 
 
-def get_android_version():
+def get_android_version(method_config_path):
     try:
-        with open('config/methods_config.yml') as f:
+        with open(method_config_path) as f:
             config = yaml.load(f, Loader=yaml.SafeLoader)
-
         android_version = int(config.get("androidVersion", 0))
         return android_version
-
     except:
         print("Error while getting android version from config file.")
         return 0
 
 
-def get_all_permissions():
-
-    android_version = get_android_version()
-
-    with open('config/methods_config.yml') as f:
+def get_all_permissions(method_config_path):
+    android_version = get_android_version(method_config_path)
+    with open(method_config_path) as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
-
     permissions_list = []
     if config['permissions'][android_version]:
         permissions_list = list(config['permissions'][android_version].keys())
-
     return permissions_list
 
-
-def get_scoring():
-
-    android_version = get_android_version()
-
-    with open('config/methods_config.yml') as f:
+def get_scoring(method_config_path):
+    android_version = get_android_version(method_config_path)
+    with open(method_config_path) as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
-
     permissions_weights_dict = {}
     if config['permissions'][android_version]:
         permissions_weights_dict = {permission: data['weight'] for permission, data in config['permissions'][android_version].items()}
-
     return permissions_weights_dict
-
 
 def get_permissions_list(permissions_str):
     if permissions_str:
-        permissions_list = [element.strip() for element in permissions_str.split(
-            ",")] if permissions_str else []
-
+        permissions_list = [element.strip() for element in permissions_str.split(",")] if permissions_str else []
         return permissions_list
-
     return []
 
-def get_sum_weights():
+def get_sum_weights(method_config_path):
 
-    android_version = get_android_version()
+    android_version = get_android_version(method_config_path)
 
     with open('config/methods_config.yml') as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
