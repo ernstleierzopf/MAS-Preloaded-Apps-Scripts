@@ -14,6 +14,9 @@ from utils.decompile_jadx import decompile as decompile_jadx
 from utils.auxiliar_functions import get_version_name, use_semgrep, get_script_version, check_package_name, get_suid_from_manifest, load_and_execute_methods
 from utils.formula import extract_and_store_permissions
 
+logging.basicConfig()
+logging.getLogger().setLevel(logging.INFO)
+
 ADA_URL = "https://appdefense-dot-devsite-v2-prod-3p.appspot.com/directory/data/certs.json"
 apk_dir_path = sys.argv[1]
 all_apk_hashes = "results/all-apk-hashes.csv"
