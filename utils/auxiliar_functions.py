@@ -150,7 +150,7 @@ def check_network_applies(wdir, apk_hash, internet, uuid_execution):
     return applies
 
 
-def check_app(wdir, apk, apk_hash, package_name, internet, semgrep, uuid_execution):
+def check_app(wdir, apk, apk_hash, package_name, internet, semgrep, uuid_execution, method_config_path):
 
     # if no content in /sources add in Logging table this error and no scan
     sources = os.path.join(wdir, "decompiled", "sources")
@@ -163,12 +163,12 @@ def check_app(wdir, apk, apk_hash, package_name, internet, semgrep, uuid_executi
     else:
         print("Starting scanning process...")
         version_name = get_version_name(wdir)
-        script_version = get_script_version()
+        script_version = get_script_version(method_config_path)
         database_utils.insert_values_report(
             apk_hash, package_name, version_name, semgrep, script_version, uuid_execution)
         database_utils.insert_values_total_fail_count(apk_hash, uuid_execution)
 
-        with open('config/methods_config.yml') as f:
+        with open(method_config_path) as f:
             config = yaml.load(f, Loader=yaml.SafeLoader)
 
         # Check if the application has internet permissions or if another application with the same SUID has internet permissions
@@ -199,8 +199,8 @@ def load_and_execute_methods(config, all_params, applies):
                 print(f"Method check not found in {module_name}")
 
 
-def use_semgrep():
-    with open('config/methods_config.yml') as f:
+def use_semgrep(method_config_path):
+    with open(method_config_path) as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
 
     use = bool(config.get("semgrep", {}))
@@ -208,8 +208,8 @@ def use_semgrep():
     return use
 
 
-def get_script_version():
-    with open('config/methods_config.yml') as f:
+def get_script_version(method_config_path):
+    with open(method_config_path) as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
 
     version = config.get("version", {})
@@ -217,8 +217,8 @@ def get_script_version():
     return str(version)
 
 
-def export_csv():
-    with open('config/methods_config.yml') as f:
+def export_csv(method_config_path):
+    with open(method_config_path) as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
 
     export_csv = bool(config.get("export_csv", {}))
@@ -259,7 +259,7 @@ def load_ADA_json(filepath):
     return data
 
 
-def check_scanned(apk_hash, package_name, wdir, uuid_execution, ada_json_path):
+def check_scanned(apk_hash, package_name, wdir, uuid_execution, ada_json_path, method_config_path):
 
     if os.path.exists(ada_json_path):
 
@@ -267,8 +267,8 @@ def check_scanned(apk_hash, package_name, wdir, uuid_execution, ada_json_path):
         certificates = data.get("certificates", [])
 
         version_name = get_version_name(wdir)
-        semgrep = use_semgrep()
-        script_version = get_script_version()
+        semgrep = use_semgrep(method_config_path)
+        script_version = get_script_version(method_config_path)
 
         for certificate in certificates:
             if certificate.get("packageName") == package_name:

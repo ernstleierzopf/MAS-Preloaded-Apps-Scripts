@@ -28,6 +28,7 @@ apk_findings = sys.argv[7]
 all_apk_findings = sys.argv[8]
 apk_permissions = sys.argv[9]
 all_apk_permissions = sys.argv[10]
+method_config_path = sys.argv[11]
 results_header = "HASH;APP_NAME;VERSION_NAME;SCRIPT_VERSION;CODE-1;CODE-2;CRYPTO-1;CRYPTO-3;NETWORK-1;NETWORK-2;NETWORK-3;PLATFORM-2;PLATFORM-3;STORAGE-2"
 fail_counts_header = "HASH;APP_NAME;VERSION_NAME;SCRIPT_VERSION;CODE_1;CODE_2;CRYPTO_1;CRYPTO_3;NETWORK_1;NETWORK_2;NETWORK_3;PLATFORM_2;PLATFORM_3;STORAGE_2"
 findings_header = "HASH;APP_NAME;CATEGORY;TEST_ID;PATH;LINE"
@@ -67,9 +68,9 @@ if not found:
         f.write(response.content)
 
     cwd = os.getcwd()
-    semgrep = use_semgrep()
-    script_version = get_script_version()
-    with open('config/methods_config.yml') as f:
+    semgrep = use_semgrep(method_config_path)
+    script_version = get_script_version(method_config_path)
+    with open(method_config_path) as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
     os.chdir(apk_dir_path)
     decompile_apk(apk_path, os.path.dirname(__file__))
