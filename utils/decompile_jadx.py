@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import os
+from settings import PATH_JADX
 
 def print_progress(progress):
     # Calculate the progress bar width
@@ -18,7 +19,7 @@ def print_progress(progress):
     sys.stdout.flush()
 
 def decompile(output_path, app_path, script_path):
-    command = [script_path+"/tools/jadx/bin/jadx", "-d", output_path, app_path]
+    command = [PATH_JADX, "-d", output_path, app_path]
     try:
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         progress = 0

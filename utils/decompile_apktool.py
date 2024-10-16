@@ -1,10 +1,10 @@
 import subprocess
 import sys
 import os
-
+from settings import PATH_APKSIGNER
 
 def decompile(app_path, script_path):
-    command = [script_path+"/tools/apktool", "d", app_path]
+    command = [PATH_APKTOOL, "d", app_path]
     try:
         process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
         stdout, stderr = process.communicate(timeout=180)
@@ -15,7 +15,7 @@ def decompile(app_path, script_path):
     except Exception as e:
 
         # Retry with another command:
-        retry_command = [script_path+"/tools/apktool", "d", "-f", "--no-res", app_path]
+        retry_command = [PATH_APKTOOL, "d", "-f", "--no-res", app_path]
 
         try:
             process_retry = subprocess.Popen(retry_command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
