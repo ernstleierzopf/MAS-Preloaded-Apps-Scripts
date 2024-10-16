@@ -32,7 +32,7 @@ def decompile(app_path, script_path):
                     
             process_retry.wait(timeout=300)
 
-        except (subprocess.CalledPProcessError, subprocess.TimeoutExpired) as e:
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
             print("APKTOOL ERROR:", e)
 
 
