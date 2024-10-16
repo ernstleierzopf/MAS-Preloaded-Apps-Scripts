@@ -264,7 +264,7 @@ if not found:
             f.write(os.path.basename(apk_path) + ";" + searched_hash + "\n")
 
 else:  # already analyzed - add results from all files to this result
-    logging.info("Analysis results for ", os.path.basename(apk_path), " found. Reusing existing results.")
+    logging.info("Analysis results for %s found. Reusing existing results." % os.path.basename(apk_path))
     if not os.path.exists(apk_results):
         with open(apk_results, "w") as f:
             f.write(results_header + "\n")
