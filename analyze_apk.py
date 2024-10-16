@@ -28,7 +28,8 @@ apk_findings = sys.argv[7]
 all_apk_findings = sys.argv[8]
 apk_permissions = sys.argv[9]
 all_apk_permissions = sys.argv[10]
-method_config_path = sys.argv[11]
+base_path = sys.argv[11]
+method_config_path = os.path.join(base_path, "config/methods_config.yml")
 results_header = "HASH;APP_NAME;VERSION_NAME;SCRIPT_VERSION;CODE-1;CODE-2;CRYPTO-1;CRYPTO-3;NETWORK-1;NETWORK-2;NETWORK-3;PLATFORM-2;PLATFORM-3;STORAGE-2"
 fail_counts_header = "HASH;APP_NAME;VERSION_NAME;SCRIPT_VERSION;CODE_1;CODE_2;CRYPTO_1;CRYPTO_3;NETWORK_1;NETWORK_2;NETWORK_3;PLATFORM_2;PLATFORM_3;STORAGE_2"
 findings_header = "HASH;APP_NAME;CATEGORY;TEST_ID;PATH;LINE"
@@ -73,7 +74,7 @@ if not found:
     with open(method_config_path) as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
     os.chdir(apk_dir_path)
-    decompile_apk(apk_path, os.path.dirname(__file__))
+    decompile_apk(apk_path, base_path)
     if not os.path.exists(extracted_path):
         logging.error("Extracted APK path does not exist. Stopping..")
         exit(1)
