@@ -149,7 +149,7 @@ def get_sum_weights(method_config_path):
 
     android_version = get_android_version(method_config_path)
 
-    with open('config/methods_config.yml') as f:
+    with open(method_config_path) as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
 
     total_weight = 0
