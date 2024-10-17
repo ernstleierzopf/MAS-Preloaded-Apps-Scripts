@@ -15,6 +15,7 @@ from utils.auxiliar_functions import get_version_name, use_semgrep, get_script_v
 from utils.formula import extract_and_store_permissions
 
 logging.basicConfig(format='{levelname:^5s} - {message:s}', style='{', level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 ADA_URL = "https://appdefense-dot-devsite-v2-prod-3p.appspot.com/directory/data/certs.json"
 apk_dir_path = sys.argv[1]
