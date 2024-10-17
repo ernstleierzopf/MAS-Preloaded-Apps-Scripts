@@ -14,8 +14,7 @@ from utils.decompile_jadx import decompile as decompile_jadx
 from utils.auxiliar_functions import get_version_name, use_semgrep, get_script_version, check_package_name, get_suid_from_manifest, load_and_execute_methods
 from utils.formula import extract_and_store_permissions
 
-logging.basicConfig()
-logging.getLogger().setLevel(logging.INFO)
+logging.basicConfig(format='{levelname:^5s} - {message:s}', style='{', level=logging.INFO)
 
 ADA_URL = "https://appdefense-dot-devsite-v2-prod-3p.appspot.com/directory/data/certs.json"
 apk_dir_path = sys.argv[1]
@@ -74,6 +73,7 @@ if not found:
     with open(method_config_path) as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
     os.chdir(apk_dir_path)
+    logging.info("Starting analysis of %s." % os.path.basename(apk_path))
     decompile_apk(apk_path)
     if not os.path.exists(extracted_path):
         logging.error("Extracted APK path does not exist. Stopping..")
