@@ -10,7 +10,7 @@ def decompile(app_path):
     try:
         process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
         stdout, stderr = process.communicate(timeout=180)
-        if stderr is not None:
+        if stderr:
             logging.error("apktool had an error when extracting {}: {}".format(app_path, stderr))
         # Output is not displayed
         process.wait(timeout=300)
