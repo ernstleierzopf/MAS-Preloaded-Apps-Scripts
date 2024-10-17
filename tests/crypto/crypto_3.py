@@ -33,13 +33,16 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
                     except:
                         msg = "%s;%s;%s;CRYPTO-3;It was not possible to get match_file or match_line" % (apk_hash, package_name, ct)
                         logging.error(msg)
+                        verdict = "NA"
         except subprocess.CalledProcessError as e:
             if e.returncode != 1:
                 msg = "%s;%s;%s;CRYPTO-3;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources_path)
                 logging.error(msg)
+                verdict = "NA"
         except:
             msg = "%s;%s;%s;CRYPTO-3;grep command failed for %s" % (apk_hash, package_name, ct, i)
             logging.error(msg)
+            verdict = "NA"
     if total_matches == 0:
         verdict = 'PASS'
     report["CRYPTO-3"] = verdict

@@ -11,6 +11,7 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
     Checks for WRITE_EXTERNAL_STORAGE in AndroidManifest.xml file.
     If it is not found, it is a PASS
     """
+    verdict = 'FAIL'
     output_write_external = 0
     cmd = "grep -n --exclude='*.dex' -iE WRITE_EXTERNAL_STORAGE %s" % os.path.join(wdir, apk.replace(".apk", ""), 'AndroidManifest.xml')
     ct = datetime.datetime.now()
@@ -25,11 +26,12 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
         if e.returncode != 1:
             msg = "%s;%s;%s;STORAGE-2;grep for WRITE_EXTERNAL_STORAGE permission failed. File not found" % (apk_hash, package_name, ct)
             logging.error(msg)
+            verdict = "NA"
     except:
         msg = "%s;%s;%s;STORAGE-2;grep for WRITE_EXTERNAL_STORAGE permission failed. File not found" % (apk_hash, package_name, ct)
         logging.error(msg)
+        verdict = "NA"
     total_matches = 0
-    verdict = 'FAIL'
     if output_write_external >= 1:
         storage_functions = ["getExternalStorageDirectory", "getExternalFilesDir"]
         for i in storage_functions:
@@ -58,12 +60,14 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
                 if e.returncode != 1:
                     msg = "%s;%s;%s;STORAGE-2;grep command failed for %s" % (apk_hash, package_name, ct, i)
                     logging.error(msg)
+                    verdict = "NA"
             except:
                 msg = "%s;%s;%s;STORAGE-2;grep command failed for %s" % (apk_hash, package_name, ct, i)
                 logging.error(msg)
-        if total_matches == 0:
+                verdict = "NA"
+        if total_matches == 0 and verdict != "NA":
             verdict = 'PASS'
-    elif output_write_external == 0:
+    elif output_write_external == 0 and verdict != "NA":
         verdict = 'PASS'
     report["STORAGE-2"] = verdict
     fail_counts["STORAGE-2"] = total_matches

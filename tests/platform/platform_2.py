@@ -41,13 +41,16 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
                 except:
                     msg = "%s;%s;%s;PLATFORM-2;It was not possible to get match_file or match_line" % (apk_hash, package_name, ct)
                     logging.error(msg)
+                    verdict = "NA"
     except subprocess.CalledProcessError as e:
         if e.returncode != 1:
             msg = "%s;%s;%s;PLATFORM-2;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources)
             logging.error(msg)
+            verdict = "NA"
     except:
         msg = "%s;%s;%s;PLATFORM-2;grep failed for %s" % (apk_hash, package_name, ct, regex_1)
         logging.error(msg)
+        verdict = "NA"
 
     cmd = f"grep -rlnwzs --exclude='*.dex' -P {regex_2} {sources}"
     try:
@@ -61,13 +64,16 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
                 except:
                     msg = "%s;%s;%s;PLATFORM-2;It was not possible to get match_str" % (apk_hash, package_name, ct)
                     logging.error(msg)
+                    verdict = "NA"
     except subprocess.CalledProcessError as e:
         if e.returncode != 1:
             msg = "%s;%s;%s;PLATFORM-2;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources)
             logging.error(msg)
+            verdict = "NA"
     except:
         msg = "%s;%s;%s;PLATFORM-2;grep failed for %s" % (apk_hash, package_name, ct, regex_2)
         logging.error(msg)
+        verdict = "NA"
     if total_matches == 0:
         verdict = 'PASS'
     report["PLATFORM-2"] = verdict

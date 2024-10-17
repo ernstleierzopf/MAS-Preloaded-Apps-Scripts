@@ -33,9 +33,11 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
         if e.returncode != 1:
             msg = "%s;%s;%s;CRYPTO-1;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources_path)
             logging.error(msg)
+            verdict = "NA"
     except:
         msg = "%s;%s;%s;CRYPTO-1;grep command failed for %s" % (apk_hash, package_name, ct, regex_1)
         logging.error(msg)
+        verdict = "NA"
 
     cmd = f"grep -rlnws --exclude='*.dex' -E {regex_2} {sources_path}"
     try:
@@ -50,11 +52,13 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
         if e.returncode != 1:
             msg = "%s;%s;%s;CRYPTO-1;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources_path)
             logging.error(msg)
+            verdict = "NA"
     except:
         msg = "%s;%s;%s;CRYPTO-1;grep command failed for %s" % (apk_hash, package_name, ct, regex_2)
         logging.error(msg)
+        verdict = "NA"
 
-    if total_matches == 0:
+    if total_matches == 0 and verdict == 'FAIL':
         verdict = 'PASS'
     report["CRYPTO-1"] = verdict
     fail_counts["CRYPTO-1"] = total_matches

@@ -29,9 +29,11 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
             if e.returncode != 1:
                 msg = "%s;%s;%s;NETWORK-1;Check redirects script failed" % (apk_hash, package_name, ct)
                 logging.error(msg)
+                verdict = "NA"
         except:
             msg = "%s;%s;%s;NETWORK-1;Check redirects script failed" % (apk_hash, package_name, ct)
             logging.error(msg)
+            verdict = "NA"
     else:
         verdict = 'PASS'
     report["NETWORK-1"] = verdict
