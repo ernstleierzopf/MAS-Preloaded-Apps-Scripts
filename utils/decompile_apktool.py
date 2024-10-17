@@ -1,7 +1,7 @@
 import subprocess
 import sys
 import os
-from settings import PATH_APKSIGNER
+from settings import PATH_APKTOOL
 
 def decompile(app_path, script_path):
     command = [PATH_APKTOOL, "d", app_path]
