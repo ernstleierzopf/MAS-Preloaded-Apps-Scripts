@@ -2,7 +2,6 @@
 import os.path
 import subprocess
 import datetime
-import db.database_utils as database_utils
 from utils.auxiliar_functions import get_suid_from_manifest
 
 

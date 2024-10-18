@@ -7,7 +7,7 @@ from openpyxl import Workbook
 from settings import RULES_SEMGREP_PATH
 import datetime
 import re
-import db.database_utils as database_utils
+#import db.database_utils as database_utils
 from utils.auxiliar_functions import get_version_name, get_script_version
 
 def scan_with_semgrep(target_path, rules_path):
@@ -71,9 +71,9 @@ def write_to_database(app_results, apk_hash, package_name, version_name, script_
                 path = finding.get("path", "N/A")
                 start_line = finding.get("start", {}).get("line", "N/A")
                 res_app[extract_tc(check_id)] = "FAIL"
-                database_utils.insert_new_finding([apk_hash, package_name, category, check_id, path, start_line, uuid_execution])
+                # database_utils.insert_new_finding([apk_hash, package_name, category, check_id, path, start_line, uuid_execution])
 
-    database_utils.insert_new_report(list(res_app.values()))
+    # database_utils.insert_new_report(list(res_app.values()))
 
 
 def analyze_app(app_dir):
@@ -104,7 +104,7 @@ def semgrep_scan(wdir, apk_hash, package_name, uuid_execution):
     if not (os.path.exists(wdir + '/decompiled/sources') and os.path.isdir(wdir + '/decompiled/sources')):
         print('Application was decompiled and no sources folder was found. Skipping.')
         ct = datetime.datetime.now()
-        database_utils.insert_values_logging(apk_hash, package_name, ct, 'Full Application', 'Application was decompiled and no sources folder was found.', uuid_execution)
+        # database_utils.insert_values_logging(apk_hash, package_name, ct, 'Full Application', 'Application was decompiled and no sources folder was found.', uuid_execution)
 
     else:
         app_results = {}

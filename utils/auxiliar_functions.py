@@ -1,7 +1,7 @@
 import subprocess
 import datetime
 from settings import PATH_APKSIGNER
-import db.database_utils as database_utils
+# import db.database_utils as database_utils
 import base64
 import yaml
 import importlib
@@ -116,36 +116,36 @@ def check_network_applies(wdir, apk_hash, internet, uuid_execution):
 
         if content == "1":
             applies = True
-        elif content == "0":
-            database_utils.update_values(
-                "Report", "NETWORK_1", "NA", "HASH", apk_hash, uuid_execution)
-            database_utils.update_values(
-                "Report", "NETWORK_2", "NA", "HASH", apk_hash, uuid_execution)
-            database_utils.update_values(
-                "Report", "NETWORK_3", "NA", "HASH", apk_hash, uuid_execution)
-            database_utils.update_values(
-                "Total_Fail_Counts", "NETWORK_1", 0, "HASH", apk_hash, uuid_execution)
-            database_utils.update_values(
-                "Total_Fail_Counts", "NETWORK_2", 0, "HASH", apk_hash, uuid_execution)
-            database_utils.update_values(
-                "Total_Fail_Counts", "NETWORK_3", 0, "HASH", apk_hash, uuid_execution)
+        # elif content == "0":
+        #     database_utils.update_values(
+        #         "Report", "NETWORK_1", "NA", "HASH", apk_hash, uuid_execution)
+        #     database_utils.update_values(
+        #         "Report", "NETWORK_2", "NA", "HASH", apk_hash, uuid_execution)
+        #     database_utils.update_values(
+        #         "Report", "NETWORK_3", "NA", "HASH", apk_hash, uuid_execution)
+        #     database_utils.update_values(
+        #         "Total_Fail_Counts", "NETWORK_1", 0, "HASH", apk_hash, uuid_execution)
+        #     database_utils.update_values(
+        #         "Total_Fail_Counts", "NETWORK_2", 0, "HASH", apk_hash, uuid_execution)
+        #     database_utils.update_values(
+        #         "Total_Fail_Counts", "NETWORK_3", 0, "HASH", apk_hash, uuid_execution)
 
     except:
         if internet == "1":
             applies = True
-        else:
-            database_utils.update_values(
-                "Report", "NETWORK_1", "NA", "HASH", apk_hash, uuid_execution)
-            database_utils.update_values(
-                "Report", "NETWORK_2", "NA", "HASH", apk_hash, uuid_execution)
-            database_utils.update_values(
-                "Report", "NETWORK_3", "NA", "HASH", apk_hash, uuid_execution)
-            database_utils.update_values(
-                "Total_Fail_Counts", "NETWORK_1", 0, "HASH", apk_hash, uuid_execution)
-            database_utils.update_values(
-                "Total_Fail_Counts", "NETWORK_2", 0, "HASH", apk_hash, uuid_execution)
-            database_utils.update_values(
-                "Total_Fail_Counts", "NETWORK_3", 0, "HASH", apk_hash, uuid_execution)
+        # else:
+        #     database_utils.update_values(
+        #         "Report", "NETWORK_1", "NA", "HASH", apk_hash, uuid_execution)
+        #     database_utils.update_values(
+        #         "Report", "NETWORK_2", "NA", "HASH", apk_hash, uuid_execution)
+        #     database_utils.update_values(
+        #         "Report", "NETWORK_3", "NA", "HASH", apk_hash, uuid_execution)
+        #     database_utils.update_values(
+        #         "Total_Fail_Counts", "NETWORK_1", 0, "HASH", apk_hash, uuid_execution)
+        #     database_utils.update_values(
+        #         "Total_Fail_Counts", "NETWORK_2", 0, "HASH", apk_hash, uuid_execution)
+        #     database_utils.update_values(
+        #         "Total_Fail_Counts", "NETWORK_3", 0, "HASH", apk_hash, uuid_execution)
 
     return applies
 
@@ -157,16 +157,16 @@ def check_app(wdir, apk, apk_hash, package_name, internet, semgrep, uuid_executi
     if not (os.path.exists(sources) and os.path.isdir(sources)):
         print('Application was decompiled and no sources folder was found. Skipping.')
         ct = datetime.datetime.now()
-        database_utils.insert_values_logging(apk_hash, package_name, ct, 'Full Application',
-                                             'Application was decompiled and no sources folder was found.', uuid_execution)
+        # database_utils.insert_values_logging(apk_hash, package_name, ct, 'Full Application',
+        #                                      'Application was decompiled and no sources folder was found.', uuid_execution)
 
     else:
         print("Starting scanning process...")
         version_name = get_version_name(wdir)
         script_version = get_script_version(method_config_path)
-        database_utils.insert_values_report(
-            apk_hash, package_name, version_name, semgrep, script_version, uuid_execution)
-        database_utils.insert_values_total_fail_count(apk_hash, uuid_execution)
+        # database_utils.insert_values_report(
+        #     apk_hash, package_name, version_name, semgrep, script_version, uuid_execution)
+        # database_utils.insert_values_total_fail_count(apk_hash, uuid_execution)
 
         with open(method_config_path) as f:
             config = yaml.load(f, Loader=yaml.SafeLoader)
@@ -272,8 +272,8 @@ def check_scanned(apk_hash, package_name, wdir, uuid_execution, ada_json_path, m
 
         for certificate in certificates:
             if certificate.get("packageName") == package_name:
-                database_utils.add_analyzed_app(
-                    apk_hash, uuid_execution, package_name, version_name, semgrep, script_version)
+                # database_utils.add_analyzed_app(
+                #     apk_hash, uuid_execution, package_name, version_name, semgrep, script_version)
                 formula.extract_and_store_permissions(
                     apk_hash, package_name, wdir, uuid_execution)
                 print('APP ' + package_name + ' scanned before.')
@@ -356,7 +356,7 @@ def insert_findings(id_execution, path):
                     finding_data = (hash, app_name, category,
                                     check_id, finding_path, line, str(id_execution))
 
-                    database_utils.insert_new_finding(finding_data)
+                    # database_utils.insert_new_finding(finding_data)
     else:
         print('CSV file with list of findings was not found.')
 
@@ -376,8 +376,8 @@ def insert_permissions(id_execution, path):
                     app_name = row[1]
                     permissions = row[2]
 
-                    database_utils.insert_values_permissions(
-                        hash, app_name, permissions, str(id_execution))
+                    # database_utils.insert_values_permissions(
+                    #     hash, app_name, permissions, str(id_execution))
     else:
         print('CSV file with list of permissions was not found.')
 
@@ -412,7 +412,7 @@ def insert_report(id_execution, path):
                     report_data = (hash, str(id_execution), app_name, version_name, semgrep, script_version, code_1,
                                    code_2, crypto_1, crypto_3, network_1, network_2, network_3, platform_2, platform_3, storage_2)
 
-                    database_utils.insert_new_report(report_data)
+                    # database_utils.insert_new_report(report_data)
     else:
         print('CSV file with list of report was not found.')
 
@@ -443,7 +443,7 @@ def insert_total_fail_counts(id_execution, path):
                     tfc_data = (hash, str(id_execution), code_1, code_2, crypto_1, crypto_3,
                                 network_1, network_2, network_3, platform_2, platform_3, storage_2)
 
-                    database_utils.insert_new_total_fail_counts(tfc_data)
+                    # database_utils.insert_new_total_fail_counts(tfc_data)
     else:
         print('CSV file with list of total fail counts was not found.')
 
@@ -453,7 +453,7 @@ def insert_values(id_execution, path):
     actual_date = datetime.datetime.now()
     formated_date = actual_date.strftime('%Y-%m-%d %H:%M:%S.%f')
 
-    database_utils.insert_new_execution(str(id_execution), formated_date)
+    # database_utils.insert_new_execution(str(id_execution), formated_date)
 
     insert_findings(id_execution, path)
     insert_permissions(id_execution, path)

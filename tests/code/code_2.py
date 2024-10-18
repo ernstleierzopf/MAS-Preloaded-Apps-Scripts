@@ -2,7 +2,6 @@
 
 import os
 from utils.auxiliar_functions import check_debuggable
-import db.database_utils as database_utils
 
 
 def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):

@@ -2,7 +2,6 @@ import xml.etree.ElementTree as ET
 from math import prod
 import sys
 sys.path.append('./')
-from db import database_utils
 # from settings import SUID_SYSTEM
 import yaml
 

@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, Mock, call
 from settings import DB_USER_MASA, DB_PASSWORD_MASA
-import mysql.connector
+#import mysql.connector
 from tests.code.code_1 import check as check_code1
 from tests.code.code_2 import check as check_code2
 from tests.crypto.crypto_1 import check as check_crypto1
@@ -17,7 +17,7 @@ class TestDatabaseUtils(unittest.TestCase):
 
     def setUp(self):
         # Conectar a la base de datos de prueba
-        self.cnx = mysql.connector.connect(user=DB_USER_MASA, password=DB_PASSWORD_MASA)
+        # self.cnx = mysql.connector.connect(user=DB_USER_MASA, password=DB_PASSWORD_MASA)
         self.cursor = self.cnx.cursor()
 
     def get_result_TC(self, func_check, tc_name):
