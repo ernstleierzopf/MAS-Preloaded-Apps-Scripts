@@ -4,6 +4,7 @@ import yaml
 import base64
 import hashlib
 import utils.formula as formula
+import logging
 
 method_config_path = sys.argv[1]
 permissions_path = sys.argv[2]
