@@ -12,6 +12,14 @@ score_path = sys.argv[4]
 all_scores_path = sys.argv[5]
 firmware_image_path = sys.argv[6]
 
+if not os.path.exists(permissions_path):
+    logging.error("Permission path %s does not exist. Stopping.." % permissions_path)
+    exit(1)
+
+if not os.path.exists(fail_counts_path):
+    logging.error("Fail counts path %s does not exist. Stopping.." % fail_counts_path)
+    exit(1)
+
 with open(method_config_path) as f:
     config = yaml.load(f, Loader=yaml.SafeLoader)
 tests_list = [value.upper() for values in config["tests"].values() for value in values]
