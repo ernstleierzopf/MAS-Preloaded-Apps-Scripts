@@ -87,7 +87,7 @@ if not found:
     os.chdir(cwd)
 
     try:
-        response = subprocess.check_output('grep -or -E "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,4}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)" ' + decompiled_dir + ' --exclude-dir=resources --no-filename', shell=True)
+        response = subprocess.check_output('grep -or -E "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,4}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)" "' + decompiled_dir + '" --exclude-dir=resources --no-filename', shell=True)
         net2 = set(response.decode("utf-8").split("\n"))
         net2.remove("")
         net2 = [x + "\n" for x in net2]
@@ -97,7 +97,7 @@ if not found:
         f.writelines(net2)
 
     try:
-        response = subprocess.check_output('grep -or -E "http:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,4}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)" ' + decompiled_dir + ' --exclude-dir=resources --no-filename', shell=True)
+        response = subprocess.check_output('grep -or -E "http:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,4}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)" "' + decompiled_dir + '" --exclude-dir=resources --no-filename', shell=True)
         http_net2 = set(response.decode("utf-8").split("\n"))
         http_net2.remove("")
         http_net2 = [x + "\n" for x in http_net2]
@@ -106,19 +106,19 @@ if not found:
     with open(os.path.join(apk_dir_path, "http_net2.txt"), "w") as f:
         f.writelines(http_net2)
 
-    subprocess.check_output('cat ' + os.path.join(apk_dir_path, "net2.txt") + '| cut -d "/" -f 3 | sort | uniq > ' + os.path.join(apk_dir_path, "filtered_net2.txt"), shell=True)
+    subprocess.check_output('cat "' + os.path.join(apk_dir_path, "net2.txt") + '" | cut -d "/" -f 3 | sort | uniq > "' + os.path.join(apk_dir_path, "filtered_net2.txt") + '"', shell=True)
     shutil.copy2(os.path.join(decompiled_dir, "resources", "AndroidManifest.xml"), android_manifest_path)
     version_name = get_version_name(extracted_path)
     package_name = check_package_name(extracted_path, os.path.basename(apk_path))
 
     internet = 0
     try:
-        response = subprocess.check_output('cat ' + android_manifest_path + ' | grep -E "INTERNET|ACCESS_NETWORK_STATE|ACCESS_WIFI_STATE"', shell=True)
+        response = subprocess.check_output('cat "' + android_manifest_path + '" | grep -E "INTERNET|ACCESS_NETWORK_STATE|ACCESS_WIFI_STATE"', shell=True)
     except subprocess.CalledProcessError:
         internet = 1
     suid = 0
     try:
-        response = subprocess.check_output('cat ' + android_manifest_path + ' | grep -Po "(?<=android:sharedUserId=)\\"[^\\"]+\\"" | sed \'s/\\"//g\'', shell=True)
+        response = subprocess.check_output('cat "' + android_manifest_path + '" | grep -Po "(?<=android:sharedUserId=)\\"[^\\"]+\\"" | sed \'s/\\"//g\'', shell=True)
     except subprocess.CalledProcessError:
         suid = 1
 
