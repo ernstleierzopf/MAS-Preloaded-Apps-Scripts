@@ -210,25 +210,25 @@ if not found:
                       'report': report, 'fail_counts': fail_counts, 'findings': findings}
         load_and_execute_methods(config['tests'], all_params, applies)
         app_permissions = extract_and_store_permissions(android_manifest_path)
-        if not os.path.exists(all_apk_results):
+        if not os.path.exists(all_apk_results) or os.stat(all_apk_results).st_size == 0:
             with open(all_apk_results, "w") as f:
                 f.write(results_header + "\n")
         if not os.path.exists(apk_results):
             with open(apk_results, "w") as f:
                 f.write(results_header + "\n")
-        if not os.path.exists(all_apk_fail_counts):
+        if not os.path.exists(all_apk_fail_counts) or os.stat(all_apk_fail_counts).st_size == 0:
             with open(all_apk_fail_counts, "w") as f:
                 f.write(fail_counts_header + "\n")
         if not os.path.exists(apk_fail_counts):
             with open(apk_fail_counts, "w") as f:
                 f.write(fail_counts_header + "\n")
-        if not os.path.exists(all_apk_findings):
+        if not os.path.exists(all_apk_findings) or os.stat(all_apk_findings).st_size == 0:
             with open(all_apk_findings, "w") as f:
                 f.write(findings_header + "\n")
         if not os.path.exists(apk_findings):
             with open(apk_findings, "w") as f:
                 f.write(findings_header + "\n")
-        if not os.path.exists(all_apk_permissions):
+        if not os.path.exists(all_apk_permissions) or os.stat(all_apk_permissions).st_size == 0:
             with open(all_apk_permissions, "w") as f:
                 f.write(permissions_header + "\n")
         if not os.path.exists(apk_permissions):
