@@ -21,14 +21,14 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
         if output:
             output_write_external += 1   
             match_line = output[0].decode().strip().split(':', 1)[0]
-            findings.append("%s;%s;STORAGE;STORAGE-2;%s;%s" % (apk_hash, package_name, os.path.join(wdir, apk.replace(".apk", ""), 'AndroidManifest.xml'), match_line))
+            findings.append("%s;%s;Storage;Storage-2;%s;%s" % (apk_hash, package_name, os.path.join(wdir, apk.replace(".apk", ""), 'AndroidManifest.xml'), match_line))
     except subprocess.CalledProcessError as e:
         if e.returncode != 1:
-            msg = "%s;%s;%s;STORAGE-2;grep for WRITE_EXTERNAL_STORAGE permission failed. File not found" % (apk_hash, package_name, ct)
+            msg = "%s;%s;%s;Storage-2;grep for WRITE_EXTERNAL_STORAGE permission failed. File not found" % (apk_hash, package_name, ct)
             logging.error(msg)
             verdict = "NA"
     except:
-        msg = "%s;%s;%s;STORAGE-2;grep for WRITE_EXTERNAL_STORAGE permission failed. File not found" % (apk_hash, package_name, ct)
+        msg = "%s;%s;%s;Storage-2;grep for WRITE_EXTERNAL_STORAGE permission failed. File not found" % (apk_hash, package_name, ct)
         logging.error(msg)
         verdict = "NA"
     total_matches = 0
@@ -48,28 +48,28 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
                                 match_file = match_str.split(":")[0]
                                 match_line = match_str.split(":")[1] 
                                 set_matches.add(match_file)
-                                findings.append("%s;%s;STORAGE;STORAGE-2;%s;%s" % (apk_hash, package_name, match_file, match_line))
+                                findings.append("%s;%s;Storage;Storage-2;%s;%s" % (apk_hash, package_name, match_file, match_line))
                             else:             
                                 set_matches.add(match_str)
-                                findings.append("%s;%s;STORAGE;STORAGE-2;%s;-" % (apk_hash, package_name, match_str))
+                                findings.append("%s;%s;Storage;Storage-2;%s;-" % (apk_hash, package_name, match_str))
                         except:
-                            msg = "%s;%s;%s;STORAGE-2;It was not possible to get match_file or match_line" % (apk_hash, package_name, ct)
+                            msg = "%s;%s;%s;Storage-2;It was not possible to get match_file or match_line" % (apk_hash, package_name, ct)
                             logging.error(msg)
                 total_matches += len(set_matches)
             except subprocess.CalledProcessError as e:
                 if e.returncode != 1:
-                    msg = "%s;%s;%s;STORAGE-2;grep command failed for %s" % (apk_hash, package_name, ct, i)
+                    msg = "%s;%s;%s;Storage-2;grep command failed for %s" % (apk_hash, package_name, ct, i)
                     logging.error(msg)
                     verdict = "NA"
             except:
-                msg = "%s;%s;%s;STORAGE-2;grep command failed for %s" % (apk_hash, package_name, ct, i)
+                msg = "%s;%s;%s;Storage-2;grep command failed for %s" % (apk_hash, package_name, ct, i)
                 logging.error(msg)
                 verdict = "NA"
         if total_matches == 0 and verdict != "NA":
             verdict = 'PASS'
     elif output_write_external == 0 and verdict != "NA":
         verdict = 'PASS'
-    report["STORAGE-2"] = verdict
-    fail_counts["STORAGE-2"] = total_matches
-    print('STORAGE-2 successfully tested.')
+    report["Storage-2"] = verdict
+    fail_counts["Storage-2"] = total_matches
+    print('Storage-2 successfully tested.')
     return [verdict, total_matches]

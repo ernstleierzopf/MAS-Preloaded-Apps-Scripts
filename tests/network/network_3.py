@@ -20,11 +20,11 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
     except subprocess.CalledProcessError as e:
         if e.returncode != 1:
             net_config = False
-            msg = "%s;%s;%s;NETWORK-3;Network security config file grep error" % (apk_hash, package_name, ct)
+            msg = "%s;%s;%s;Network-3;Network security config file grep error" % (apk_hash, package_name, ct)
             logging.error(msg)
     except:
         net_config = False
-        msg = "%s;%s;%s;NETWORK-3;Network security config file grep error" % (apk_hash, package_name, ct)
+        msg = "%s;%s;%s;Network-3;Network security config file grep error" % (apk_hash, package_name, ct)
         logging.error(msg)
 
     cmd_get_target_sdk = f'cat %s | grep -Po \"(?<=android:targetSdkVersion=)\\"[^\\"]+\\"\" | sed \'s/\"//g\'' % os.path.join(wdir, apk.replace(".apk", ""), "AndroidManifest.xml")
@@ -35,11 +35,11 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
     except subprocess.CalledProcessError as e:
         if e.returncode != 1:
             low_target_sdk = False
-            msg = "%s;%s;%s;NETWORK-3;Target sdk grep error" % (apk_hash, package_name, ct)
+            msg = "%s;%s;%s;Network-3;Target sdk grep error" % (apk_hash, package_name, ct)
             logging.error(msg)
     except:
         low_target_sdk = False
-        msg = "%s;%s;%s;NETWORK-3;Target sdk grep error" % (apk_hash, package_name, ct)
+        msg = "%s;%s;%s;Network-3;Target sdk grep error" % (apk_hash, package_name, ct)
         logging.error(msg)
 
     sources = os.path.join(wdir, "decompiled", "sources")
@@ -50,10 +50,10 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
             total_matches += 1
     except subprocess.CalledProcessError as e:
         if e.returncode != 1:
-            msg = "%s;%s;%s;NETWORK-3;hostname verifier functions grep error or not found" % (apk_hash, package_name, ct)
+            msg = "%s;%s;%s;Network-3;hostname verifier functions grep error or not found" % (apk_hash, package_name, ct)
             logging.error(msg)
     except:
-        msg = "%s;%s;%s;NETWORK-3;hostname verifier functions grep error or not found" % (apk_hash, package_name, ct)
+        msg = "%s;%s;%s;Network-3;hostname verifier functions grep error or not found" % (apk_hash, package_name, ct)
         logging.error(msg)
 
     if net_config and total_matches == 0:
@@ -61,13 +61,13 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
         verdict = 'Needs Review'
     elif not net_config and low_target_sdk and total_matches == 0:
         total_matches = 1
-        findings.append("%s;%s;NETWORK;NETWORK-3;%s;-" % (apk_hash, package_name, os.path.join(wdir, apk.replace(".apk", ""), "AndroidManifest.xml")))
+        findings.append("%s;%s;Network;Network-3;%s;-" % (apk_hash, package_name, os.path.join(wdir, apk.replace(".apk", ""), "AndroidManifest.xml")))
     elif not net_config and not low_target_sdk or total_matches > 0:
         total_matches = 0
         verdict = 'PASS'
     else:
         total_matches = 0
-    report["NETWORK-3"] = verdict
-    fail_counts["NETWORK-3"] = total_matches
-    print('NETWORK-3 successfully tested.')
+    report["Network-3"] = verdict
+    fail_counts["Network-3"] = total_matches
+    print('Network-3 successfully tested.')
     return [verdict, total_matches]

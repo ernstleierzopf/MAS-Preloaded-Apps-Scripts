@@ -28,14 +28,14 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
             total_matches += len(output)
             for match in output:
                 match_file = match.decode()
-                findings.append("%s;%s;CRYPTO;CRYPTO-1;%s;-" % (apk_hash, package_name, match_file))
+                findings.append("%s;%s;Crypto;Crypto-1;%s;-" % (apk_hash, package_name, match_file))
     except subprocess.CalledProcessError as e:
         if e.returncode != 1:
-            msg = "%s;%s;%s;CRYPTO-1;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources_path)
+            msg = "%s;%s;%s;Crypto-1;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources_path)
             logging.error(msg)
             verdict = "NA"
     except:
-        msg = "%s;%s;%s;CRYPTO-1;grep command failed for %s" % (apk_hash, package_name, ct, regex_1)
+        msg = "%s;%s;%s;Crypto-1;grep command failed for %s" % (apk_hash, package_name, ct, regex_1)
         logging.error(msg)
         verdict = "NA"
 
@@ -47,20 +47,20 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
             for match in output:
                 match_file = match.decode().split(":")[0]
                 match_line = match.decode().split(":")[1]
-                findings.append("%s;%s;CRYPTO;CRYPTO-1;%s;%s" % (apk_hash, package_name, match_file, match_line))
+                findings.append("%s;%s;Crypto;Crypto-1;%s;%s" % (apk_hash, package_name, match_file, match_line))
     except subprocess.CalledProcessError as e:
         if e.returncode != 1:
-            msg = "%s;%s;%s;CRYPTO-1;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources_path)
+            msg = "%s;%s;%s;Crypto-1;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources_path)
             logging.error(msg)
             verdict = "NA"
     except:
-        msg = "%s;%s;%s;CRYPTO-1;grep command failed for %s" % (apk_hash, package_name, ct, regex_2)
+        msg = "%s;%s;%s;Crypto-1;grep command failed for %s" % (apk_hash, package_name, ct, regex_2)
         logging.error(msg)
         verdict = "NA"
 
     if total_matches == 0 and verdict == 'FAIL':
         verdict = 'PASS'
-    report["CRYPTO-1"] = verdict
-    fail_counts["CRYPTO-1"] = total_matches
-    print('CRYPTO-1 successfully tested.')
+    report["Crypto-1"] = verdict
+    fail_counts["Crypto-1"] = total_matches
+    print('Crypto-1 successfully tested.')
     return [verdict, total_matches]

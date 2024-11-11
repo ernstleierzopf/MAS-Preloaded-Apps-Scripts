@@ -26,26 +26,26 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
                             match_file = match_str.split(":")[0]
                             match_line = match_str.split(":")[1] 
                             total_matches += 1
-                            findings.append("%s;%s;CRYPTO;CRYPTO-3;%s;%s" % (apk_hash, package_name, match_file, match_line))
+                            findings.append("%s;%s;Crypto;Crypto-3;%s;%s" % (apk_hash, package_name, match_file, match_line))
                         else:
                             total_matches += 1
-                            findings.append("%s;%s;CRYPTO;CRYPTO-3;%s;-" % (apk_hash, package_name, match_str))
+                            findings.append("%s;%s;Crypto;Crypto-3;%s;-" % (apk_hash, package_name, match_str))
                     except:
-                        msg = "%s;%s;%s;CRYPTO-3;It was not possible to get match_file or match_line" % (apk_hash, package_name, ct)
+                        msg = "%s;%s;%s;Crypto-3;It was not possible to get match_file or match_line" % (apk_hash, package_name, ct)
                         logging.error(msg)
                         verdict = "NA"
         except subprocess.CalledProcessError as e:
             if e.returncode != 1:
-                msg = "%s;%s;%s;CRYPTO-3;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources_path)
+                msg = "%s;%s;%s;Crypto-3;grep command failed due to %s does not exists" % (apk_hash, package_name, ct, sources_path)
                 logging.error(msg)
                 verdict = "NA"
         except:
-            msg = "%s;%s;%s;CRYPTO-3;grep command failed for %s" % (apk_hash, package_name, ct, i)
+            msg = "%s;%s;%s;Crypto-3;grep command failed for %s" % (apk_hash, package_name, ct, i)
             logging.error(msg)
             verdict = "NA"
     if total_matches == 0:
         verdict = 'PASS'
-    report["CRYPTO-3"] = verdict
-    fail_counts["CRYPTO-3"] = total_matches
-    print('CRYPTO-3 successfully tested.')
+    report["Crypto-3"] = verdict
+    fail_counts["Crypto-3"] = total_matches
+    print('Crypto-3 successfully tested.')
     return [verdict, total_matches]

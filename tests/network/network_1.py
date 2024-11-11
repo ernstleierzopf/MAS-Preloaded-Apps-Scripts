@@ -27,16 +27,16 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
                 verdict = 'PASS'
         except subprocess.CalledProcessError as e:
             if e.returncode != 1:
-                msg = "%s;%s;%s;NETWORK-1;Check redirects script failed" % (apk_hash, package_name, ct)
+                msg = "%s;%s;%s;Network-1;Check redirects script failed" % (apk_hash, package_name, ct)
                 logging.error(msg)
                 verdict = "NA"
         except:
-            msg = "%s;%s;%s;NETWORK-1;Check redirects script failed" % (apk_hash, package_name, ct)
+            msg = "%s;%s;%s;Network-1;Check redirects script failed" % (apk_hash, package_name, ct)
             logging.error(msg)
             verdict = "NA"
     else:
         verdict = 'PASS'
-    report["NETWORK-1"] = verdict
-    fail_counts["NETWORK-1"] = total_matches
-    print('NETWORK-1 successfully tested.')
+    report["Network-1"] = verdict
+    fail_counts["Network-1"] = total_matches
+    print('Network-1 successfully tested.')
     return [verdict, total_matches]

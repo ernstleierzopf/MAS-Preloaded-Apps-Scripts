@@ -16,7 +16,7 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
         verdict = 'PASS'
     else:
         total_matches = 1
-    report["CODE-1"] = verdict
-    fail_counts["CODE-1"] = total_matches
-    print('CODE-1 successfully tested.')
+    report["Code-1"] = verdict
+    fail_counts["Code-1"] = total_matches
+    print('Code-1 successfully tested.')
     return [verdict, total_matches]

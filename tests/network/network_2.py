@@ -32,17 +32,17 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
                     url_total_match = 1
             except subprocess.CalledProcessError as e:
                 if e.returncode != 1:
-                    msg = "%s;%s;%s;NETWORK-2;Command failed." % (apk_hash, package_name, ct)
+                    msg = "%s;%s;%s;Network-2;Command failed." % (apk_hash, package_name, ct)
                     logging.error(msg)
                     verdict = "NA"
             except:
-                msg = "%s;%s;%s;NETWORK-2;Command failed." % (apk_hash, package_name, ct)
+                msg = "%s;%s;%s;Network-2;Command failed." % (apk_hash, package_name, ct)
                 logging.error(msg)
                 verdict = "NA"
             if url_total_match > 0:
                 verdict = 'Needs Review'
-            findings.append("%s;%s;NETWORK;NETWORK-2;%s;%s" % (apk_hash, package_name, url_no_breakline, verdict))
-    report["NETWORK-2"] = verdict
-    fail_counts["NETWORK-2"] = total_matches
-    print('NETWORK-2 successfully tested.')
+            findings.append("%s;%s;Network;Network-2;%s;%s" % (apk_hash, package_name, url_no_breakline, verdict))
+    report["Network-2"] = verdict
+    fail_counts["Network-2"] = total_matches
+    print('Network-2 successfully tested.')
     return [verdict, total_matches]

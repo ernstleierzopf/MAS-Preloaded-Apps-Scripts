@@ -23,7 +23,7 @@ def check(wdir, apk, apk_hash, package_name, report, fail_counts, findings):
             custom_urls = custom_urls + 1
     if custom_urls > 0:
         verdict = 'Needs Review'
-    report["PLATFORM-3"] = verdict
-    fail_counts["PLATFORM-3"] = custom_urls
-    print('PLATFORM-3 successfully tested.')
+    report["Platform-3"] = verdict
+    fail_counts["Platform-3"] = custom_urls
+    print('Platform-3 successfully tested.')
     return [verdict, custom_urls]
