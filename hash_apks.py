@@ -6,7 +6,7 @@ apks_path = sys.argv[1]
 apk_hashes = sys.argv[2]
 
 with open(apk_hashes, "w") as hash_file:
-    hash_file.write("Hash;Filename")
+    hash_file.write("Hash;Filename\n")
     for root, dirs, files in os.walk(apks_path, topdown=True):
         for filename in files:
             file_path = os.path.join(root, filename)
