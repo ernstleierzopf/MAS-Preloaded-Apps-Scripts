@@ -13,4 +13,4 @@ with open(apk_hashes, "w") as hash_file:
             with open(file_path, "rb") as f:
                 f_content = f.read()
             sha256.update(f_content)
-            hash_file.write("%s;%s\n" % (filename, sha256.hexdigest()))
+            hash_file.write("%s;%s\n" % (sha256.hexdigest(), filename))

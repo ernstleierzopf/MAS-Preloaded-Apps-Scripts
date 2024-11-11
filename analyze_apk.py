@@ -30,10 +30,10 @@ apk_permissions = sys.argv[9]
 all_apk_permissions = sys.argv[10]
 base_path = sys.argv[11]
 method_config_path = os.path.join(base_path, "config/methods_config.yml")
-results_header = "HASH;APP_NAME;VERSION_NAME;SCRIPT_VERSION;CODE-1;CODE-2;CRYPTO-1;CRYPTO-3;NETWORK-1;NETWORK-2;NETWORK-3;PLATFORM-2;PLATFORM-3;STORAGE-2"
-fail_counts_header = "HASH;APP_NAME;VERSION_NAME;SCRIPT_VERSION;CODE_1;CODE_2;CRYPTO_1;CRYPTO_3;NETWORK_1;NETWORK_2;NETWORK_3;PLATFORM_2;PLATFORM_3;STORAGE_2"
-findings_header = "HASH;APP_NAME;CATEGORY;TEST_ID;PATH;LINE"
-permissions_header = "HASH;APP_NAME;PERMISSIONS"
+results_header = "Hash;App-name;Version-name;Script-version;Code-1;Code-2;Crypto-1;Crypto-3;Network-1;Network-2;Network-3;Platform-2;Platform-3;Storage-2"
+fail_counts_header = "Hash;App-name;Version-name;Script-version;Code-1;Code-2;Crypto-1;Crypto-3;Network-1;Network-2;Network-3;Platform-2;Platform-3;Storage-2"
+findings_header = "Hash;App-name;Category;Test-ID;Path;Line"
+permissions_header = "Hash;App-name;Permissions"
 
 all_lines = []
 if os.path.exists(all_apk_hashes):
@@ -127,12 +127,12 @@ if not found:
     certificates = ada_data.get("certificates", [])
     # initialize app values
     report = {"apk_hash": searched_hash, "app_name": package_name, "version_name": version_name,
-              "script_version": script_version, "CODE-1": "PASS", "CODE-2": "PASS", "CRYPTO-1": "PASS",
-              "CRYPTO-3": "PASS", "NETWORK-1": "PASS", "NETWORK-2": "PASS", "NETWORK-3": "PASS", "PLATFORM-2": "PASS",
-              "PLATFORM-3": "PASS", "STORAGE-2": "PASS"}
+              "script_version": script_version, "CODE-1": "PASS", "CODE-2": "PASS", "Crypto-1": "PASS",
+              "Crypto-3": "PASS", "Network-1": "PASS", "Network-2": "PASS", "Network-3": "PASS", "Platform-2": "PASS",
+              "Platform-3": "PASS", "Storage-2": "PASS"}
     fail_counts = {"apk_hash": searched_hash, "app_name": package_name, "version_name": version_name,
-                   "script_version": script_version, "CODE-1": 0, "CODE-2": 0, "CRYPTO-1": 0,
-                   "CRYPTO-3": 0, "NETWORK-1": 0, "NETWORK-2": 0, "NETWORK-3": 0, "PLATFORM-2": 0, "PLATFORM-3": 0, "STORAGE-2": 0}
+                   "script_version": script_version, "CODE-1": 0, "CODE-2": 0, "Crypto-1": 0,
+                   "Crypto-3": 0, "Network-1": 0, "Network-2": 0, "Network-3": 0, "Platform-2": 0, "Platform-3": 0, "Storage-2": 0}
     findings = []
     # app_permissions = None
     # scanned = False
@@ -199,12 +199,12 @@ if not found:
         if suid == 1:
             applies = True
         elif suid == 0:
-            report["NETWORK-1"] = "NA"
-            report["NETWORK-2"] = "NA"
-            report["NETWORK-3"] = "NA"
-            fail_counts["NETWORK-1"] = 0
-            fail_counts["NETWORK-2"] = 0
-            fail_counts["NETWORK-3"] = 0
+            report["Network-1"] = "NA"
+            report["Network-2"] = "NA"
+            report["Network-3"] = "NA"
+            fail_counts["Network-1"] = 0
+            fail_counts["Network-2"] = 0
+            fail_counts["Network-3"] = 0
 
         all_params = {'wdir': apk_dir_path, 'apk': os.path.basename(apk_path), 'apk_hash': searched_hash, 'package_name': package_name,
                       'report': report, 'fail_counts': fail_counts, 'findings': findings}

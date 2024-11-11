@@ -29,10 +29,10 @@ value = formula.calculate_formula(0.01, 0.01, tests_list, method_config_path, pe
 with open(method_config_path) as f:
     config_string = f.read()
 with open(score_path, "w") as f:
-    f.write("SCORE;BASE64_METHOD_CONFIG\n{:.4f};{}".format(value, base64.b64encode(config_string.encode("utf-8")).decode("utf-8")))
+    f.write("Score;Base64-method-config\n{:.4f};{}".format(value, base64.b64encode(config_string.encode("utf-8")).decode("utf-8")))
 if not os.path.exists(all_scores_path) or os.stat(all_scores_path).st_size == 0:
     with open(all_scores_path, "w") as f:
-        f.write("FIRMWARE_HASH;FIRMWARE_NAME;SCORE;BASE64_METHOD_CONFIG\n")
+        f.write("Firmware-hash;Firmware-name;Score;Base64-method-config\n")
 sha256 = hashlib.sha256()
 with open(firmware_image_path, "rb") as f:
     f_content = f.read()

@@ -16,3 +16,5 @@ unit_tests/reference_apk/Bluetooth/*.txt
 unit_tests/reference_apk/Bluetooth/base
 unit_tests/reference_apk/Bluetooth/decompiled
 unit_tests/reference_apk/Bluetooth/{}
+
+.idea/
