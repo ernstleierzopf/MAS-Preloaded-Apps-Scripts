@@ -127,11 +127,11 @@ if not found:
     certificates = ada_data.get("certificates", [])
     # initialize app values
     report = {"apk_hash": searched_hash, "app_name": package_name, "version_name": version_name,
-              "script_version": script_version, "CODE-1": "PASS", "CODE-2": "PASS", "Crypto-1": "PASS",
+              "script_version": script_version, "Code-1": "PASS", "Code-2": "PASS", "Crypto-1": "PASS",
               "Crypto-3": "PASS", "Network-1": "PASS", "Network-2": "PASS", "Network-3": "PASS", "Platform-2": "PASS",
               "Platform-3": "PASS", "Storage-2": "PASS"}
     fail_counts = {"apk_hash": searched_hash, "app_name": package_name, "version_name": version_name,
-                   "script_version": script_version, "CODE-1": 0, "CODE-2": 0, "Crypto-1": 0,
+                   "script_version": script_version, "Code-1": 0, "Code-2": 0, "Crypto-1": 0,
                    "Crypto-3": 0, "Network-1": 0, "Network-2": 0, "Network-3": 0, "Platform-2": 0, "Platform-3": 0, "Storage-2": 0}
     findings = []
     # app_permissions = None
