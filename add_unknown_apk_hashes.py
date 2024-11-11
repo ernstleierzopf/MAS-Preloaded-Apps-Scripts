@@ -13,7 +13,7 @@ if os.path.exists(all_apk_hashes):
     with open(all_apk_hashes, "r") as f:
         all_lines = f.readlines()
 
-for line in lines:
+for line in lines[1:]:
     if line not in all_lines:
         unknown_lines.append(line)
 
