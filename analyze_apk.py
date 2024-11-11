@@ -172,6 +172,7 @@ if not found:
                                 for finding in findings.get("results", []):
                                     check_id = finding.get("check_id", "N/A")
                                     path = finding.get("path", "N/A")
+                                    finding["path"] = path.replace(apk_dir_path + "/", "")
                                     start_line = finding.get("start", {}).get("line", "N/A")
                                     findings_list.append(finding)
 
