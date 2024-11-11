@@ -210,6 +210,7 @@ if not found:
         all_params = {'wdir': apk_dir_path, 'apk': os.path.basename(apk_path), 'apk_hash': searched_hash, 'package_name': package_name,
                       'report': report, 'fail_counts': fail_counts, 'findings': findings}
         load_and_execute_methods(config['tests'], all_params, applies)
+        findings = [x.replace(apk_dir_path, os.path.basename(apk_dir_path)) for x in findings]
         app_permissions = extract_and_store_permissions(android_manifest_path)
         if not os.path.exists(all_apk_results) or os.stat(all_apk_results).st_size == 0:
             with open(all_apk_results, "w") as f:
