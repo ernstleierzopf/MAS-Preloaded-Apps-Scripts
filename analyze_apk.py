@@ -58,7 +58,7 @@ searched_hash = sha256.hexdigest()
 
 found = False
 for line in all_lines:
-    apk_hash = line.split(";")[1].replace("\n", "")
+    apk_hash = line.split(";")[0].replace("\n", "")
     if apk_hash == searched_hash:
         found = True
         break

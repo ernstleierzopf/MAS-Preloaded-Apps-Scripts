@@ -1,7 +1,6 @@
 import subprocess
 import datetime
 from settings import PATH_APKSIGNER
-# import db.database_utils as database_utils
 import base64
 import yaml
 import importlib
@@ -17,9 +16,7 @@ import logging
 
 
 def check_signature(wdir, apk, apk_hash, package_name):
-    '''
-    Returns output of apksigner to verify the signature.
-    '''
+    """Returns output of apksigner to verify the signature."""
     ct = datetime.datetime.now()
     msg = "%s;%s;%s;CODE-1;apksigner failed verifying signature" % (apk_hash, package_name, ct)
     apk_path = os.path.join(wdir, apk)
@@ -37,9 +34,7 @@ def check_signature(wdir, apk, apk_hash, package_name):
 
 
 def check_debuggable(wdir, apk_hash, package_name):
-    '''
-    Check if the application uses android:debuggable="true" in AndroidManifest.xml file
-    '''
+    """Check if the application uses android:debuggable="true" in AndroidManifest.xml file"""
     manifest_path = os.path.join(wdir, "AndroidManifest.xml")
     cmd = f"grep -n --exclude='*.dex' -iE 'android:debuggable=\"true\"' {manifest_path}"
     try:
@@ -57,9 +52,7 @@ def check_debuggable(wdir, apk_hash, package_name):
 
 
 def check_package_name(wdir, name):
-    '''
-    Prints the package name.
-    '''
+    """Prints the package name."""
     # awk -F 'package=' '{print $2}' | awk -F' ' '{print $1}' | sed s/\"//g
     grep = "YXdrIC1GICdwYWNrYWdlPScgJ3twcmludCAkMn0nIHwgYXdrIC1GJyAnICd7cHJpbnQgJDF9JyB8IHNlZCBzL1wiLy9n"
     d_grep = base64.b64decode(grep).decode("utf-8")
@@ -67,26 +60,20 @@ def check_package_name(wdir, name):
 
     output = subprocess.check_output(
         cmd, shell=True).decode("utf-8").replace("\n", "")
-
     if "split" in name:
         package = output + "_" + name
     else:
         package = output
-
     if package.endswith('<') or package.endswith('>') or package.endswith('/'):
         package = package[:-1]
-
     return package
 
 
 def get_hash(wdir):
-    '''
-    Prints the application's hash - sha256
-    '''
+    """Prints the application's hash - sha256"""
     cmd = f"sha256sum {wdir}" + " | awk '{ print $1 }'"
     output = subprocess.check_output(
         cmd, shell=True).decode("utf-8").replace("\n", "")
-
     return output
 
 
@@ -151,37 +138,20 @@ def check_network_applies(wdir, apk_hash, internet, uuid_execution):
 
 
 def check_app(wdir, apk, apk_hash, package_name, internet, semgrep, uuid_execution, method_config_path):
-
     # if no content in /sources add in Logging table this error and no scan
     sources = os.path.join(wdir, "decompiled", "sources")
     if not (os.path.exists(sources) and os.path.isdir(sources)):
         print('Application was decompiled and no sources folder was found. Skipping.')
-        ct = datetime.datetime.now()
-        # database_utils.insert_values_logging(apk_hash, package_name, ct, 'Full Application',
-        #                                      'Application was decompiled and no sources folder was found.', uuid_execution)
-
     else:
         print("Starting scanning process...")
-        version_name = get_version_name(wdir)
-        script_version = get_script_version(method_config_path)
-        # database_utils.insert_values_report(
-        #     apk_hash, package_name, version_name, semgrep, script_version, uuid_execution)
-        # database_utils.insert_values_total_fail_count(apk_hash, uuid_execution)
-
         with open(method_config_path) as f:
             config = yaml.load(f, Loader=yaml.SafeLoader)
 
         # Check if the application has internet permissions or if another application with the same SUID has internet permissions
-        applies = check_network_applies(
-            wdir, apk_hash, internet, uuid_execution)
-
-        all_params = {'wdir': wdir, 'apk': apk,
-                      'apk_hash': apk_hash, 'package_name': package_name, 'uuid_execution': uuid_execution}
-
+        applies = check_network_applies(wdir, apk_hash, internet, uuid_execution)
+        all_params = {'wdir': wdir, 'apk': apk, 'apk_hash': apk_hash, 'package_name': package_name, 'uuid_execution': uuid_execution}
         load_and_execute_methods(config['tests'], all_params, applies)
-
-        formula.extract_and_store_permissions(
-            apk_hash, package_name, wdir, uuid_execution)
+        formula.extract_and_store_permissions(apk_hash, package_name, wdir, uuid_execution)
 
 
 def load_and_execute_methods(config, all_params, applies):
@@ -202,27 +172,21 @@ def load_and_execute_methods(config, all_params, applies):
 def use_semgrep(method_config_path):
     with open(method_config_path) as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
-
     use = bool(config.get("semgrep", {}))
-
     return use
 
 
 def get_script_version(method_config_path):
     with open(method_config_path) as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
-
     version = config.get("version", {})
-
     return str(version)
 
 
 def export_csv(method_config_path):
     with open(method_config_path) as f:
         config = yaml.load(f, Loader=yaml.SafeLoader)
-
     export_csv = bool(config.get("export_csv", {}))
-
     return export_csv
 
 
@@ -230,25 +194,19 @@ def get_version_name(wdir):
     try:
         with open(os.path.join(wdir, 'AndroidManifest.xml'), 'r') as file:
             content = file.read()
-
             match = re.search(r'android:versionName\s*=\s*"([^"]+)"', content)
-
             if match:
                 return match.group(1)
             else:
-                return ''
-
+                return ""
     except Exception as e:
-        return ''
+        return ""
 
 
 def parse_timestamp(timestamp):
-
     parsed_timestamp = datetime.datetime.strptime(
         timestamp, '%Y-%m-%d %H:%M:%S.%f')
-
     formatted_timestamp = parsed_timestamp.strftime('%Y%m%d_%H%M%S_%f')[:-3]
-
     return formatted_timestamp
 
 
@@ -260,22 +218,15 @@ def load_ADA_json(filepath):
 
 
 def check_scanned(apk_hash, package_name, wdir, uuid_execution, ada_json_path, method_config_path):
-
     if os.path.exists(ada_json_path):
-
         data = load_ADA_json(ada_json_path)
         certificates = data.get("certificates", [])
-
         version_name = get_version_name(wdir)
         semgrep = use_semgrep(method_config_path)
         script_version = get_script_version(method_config_path)
-
         for certificate in certificates:
             if certificate.get("packageName") == package_name:
-                # database_utils.add_analyzed_app(
-                #     apk_hash, uuid_execution, package_name, version_name, semgrep, script_version)
-                formula.extract_and_store_permissions(
-                    apk_hash, package_name, wdir, uuid_execution)
+                formula.extract_and_store_permissions(apk_hash, package_name, wdir, uuid_execution)
                 print('APP ' + package_name + ' scanned before.')
                 return True
     else:
@@ -328,12 +279,14 @@ def get_full_file_path(path, file):
             return os.path.join(path, filename)
     return None
 
+
 def get_full_folder_path(path, id_execution):
     for foldername in os.listdir(path):
         full_path = os.path.join(path, foldername)
         if os.path.isdir(full_path) and id_execution in foldername:
             return foldername
     return None
+
 
 def insert_findings(id_execution, path):
     file_path = get_full_file_path(path, 'Findings')
